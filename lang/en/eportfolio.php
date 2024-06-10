@@ -27,6 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'ePortfolio Grading';
 $string['modulename'] = 'ePortfolio Grading';
+$string['modulenameplural'] = 'ePortfolio Grading';
+$string['pluginadministration'] = 'ePortfolio Grading administration';
+
+// db/access - permissions.
+$string['eportfolio:grade_eport'] = 'Grade ePortfolio';
+$string['eportfolio:view_eport'] = 'View ePortfolio';
 
 $string['eportfolioname'] = 'Title';
 
