@@ -215,7 +215,7 @@ if (check_current_eportfolio_course($course->id)) {
 
         }
 
-    } else if ($action == 'view') {
+    } else if ($action === 'view') {
 
         // Convert display options to a valid object.
         $factory = new \core_h5p\factory();
@@ -253,7 +253,7 @@ if (check_current_eportfolio_course($course->id)) {
 
         echo $OUTPUT->render_from_template('mod_eportfolio/eportfolio_view', $data);
 
-    } else if ($action == 'delete') {
+    } else if ($action === 'delete') {
 
         if ($confirm != md5($fileid)) {
 
