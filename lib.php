@@ -30,10 +30,29 @@
  */
 function eportfolio_supports($feature) {
     switch ($feature) {
-        case FEATURE_GRADE_HAS_GRADE:
-            return true;
+        case FEATURE_GROUPS:
+            return false;
+        case FEATURE_GROUPINGS:
+            return false;
+        case FEATURE_GROUPMEMBERSONLY:
+            return false;
         case FEATURE_MOD_INTRO:
             return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return false;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return false;
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_BACKUP_MOODLE2:
+            return false;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case MOD_PURPOSE_ASSESSMENT:
+            return true;
+
         default:
             return null;
     }
@@ -54,7 +73,7 @@ function eportfolio_add_instance($moduleinstance, $mform = null) {
     global $DB;
 
     // Check, if already an instance for this course is available.
-    $exists = $DB->get_record('eportfolio', array('course' => $moduleinstance->course));
+    $exists = $DB->get_record('eportfolio', ['course' => $moduleinstance->course]);
 
     if ($exists) {
 
@@ -100,7 +119,7 @@ function eportfolio_update_instance($moduleinstance, $mform = null) {
 function eportfolio_delete_instance($id) {
     global $DB;
 
-    $exists = $DB->get_record('eportfolio', array('id' => $id));
+    $exists = $DB->get_record('eportfolio', ['id' => $id]);
     if (!$exists) {
         return false;
     }
@@ -108,11 +127,11 @@ function eportfolio_delete_instance($id) {
     $moduleid = $DB->get_field('modules', 'id', ['name' => 'eportfolio']);
 
     // Get the course module.
-    if (!$cm = $DB->get_record('course_modules', array('instance' => $id, 'module' => $moduleid))) {
+    if (!$cm = $DB->get_record('course_modules', ['instance' => $id, 'module' => $moduleid])) {
         return false;
     }
 
-    if (!$DB->delete_records('eportfolio', array('id' => $id))) {
+    if (!$DB->delete_records('eportfolio', ['id' => $id])) {
         return false;
     }
 
@@ -179,12 +198,17 @@ function eportfolio_delete_instance($id) {
 function eportfolio_scale_used($moduleinstanceid, $scaleid) {
     global $DB;
 
-    if ($scaleid && $DB->record_exists('eportfolio', array('id' => $moduleinstanceid, 'grade' => -$scaleid))) {
+    if ($scaleid && $DB->record_exists('eportfolio', ['id' => $moduleinstanceid, 'grade' => -$scaleid])) {
         return true;
     } else {
         return false;
     }
 }
+
+/*
+ * The following features are currently not in use.
+ * We will keep them in case we need them at any point.
+ */
 
 /**
  * Checks if scale is being used by any instance of mod_eportfolio.
@@ -197,7 +221,7 @@ function eportfolio_scale_used($moduleinstanceid, $scaleid) {
 function eportfolio_scale_used_anywhere($scaleid) {
     global $DB;
 
-    if ($scaleid && $DB->record_exists('eportfolio', array('grade' => -$scaleid))) {
+    if ($scaleid && $DB->record_exists('eportfolio', ['grade' => -$scaleid])) {
         return true;
     } else {
         return false;
@@ -217,7 +241,7 @@ function eportfolio_grade_item_update($moduleinstance, $reset = false) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    $item = array();
+    $item = [];
     $item['itemname'] = clean_param($moduleinstance->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
 
@@ -249,7 +273,7 @@ function eportfolio_grade_item_delete($moduleinstance) {
     require_once($CFG->libdir . '/gradelib.php');
 
     return grade_update('/mod/eportfolio', $moduleinstance->course, 'mod', 'eportfolio',
-            $moduleinstance->id, 0, null, array('deleted' => 1));
+            $moduleinstance->id, 0, null, ['deleted' => 1]);
 }
 
 /**
@@ -265,6 +289,6 @@ function eportfolio_update_grades($moduleinstance, $userid = 0) {
     require_once($CFG->libdir . '/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
-    $grades = array();
+    $grades = [];
     grade_update('/mod/eportfolio', $moduleinstance->course, 'mod', 'mod_eportfolio', $moduleinstance->id, 0, $grades);
 }

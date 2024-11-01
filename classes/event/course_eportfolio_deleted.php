@@ -24,6 +24,13 @@
 
 namespace mod_eportfolio\event;
 
+/**
+ * The mod_eportfolio instance eportfolio deleted event class.
+ *
+ * @package     mod_eportfolio
+ * @copyright   2023 weQon UG <support@weqon.net>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class course_eportfolio_deleted extends \core\event\base {
 
     /**

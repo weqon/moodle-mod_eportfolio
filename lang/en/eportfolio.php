@@ -30,7 +30,7 @@ $string['modulename'] = 'ePortfolio Grading';
 $string['modulenameplural'] = 'ePortfolio Grading';
 $string['pluginadministration'] = 'ePortfolio Grading administration';
 
-// db/access - permissions.
+// Capabilities - db/access - permissions.
 $string['eportfolio:grade_eport'] = 'Grade ePortfolio';
 $string['eportfolio:view_eport'] = 'View ePortfolio';
 
@@ -69,7 +69,7 @@ $string['message:smallmessage'] =
 $string['message:subject'] = 'Notification about new assessments for ePortfolio';
 $string['message:contexturlname'] = 'View grade for ePortfolio';
 
-// Delete shared ePortfolio
+// Delete shared ePortfolio.
 $string['delete:header'] = 'Allow new submission?';
 $string['delete:confirm'] = 'Confirm';
 $string['delete:checkconfirm'] = '<b>Do you really want to allow a new submission for this file?</b><br><br>

@@ -31,7 +31,7 @@ function xmldb_eportfolio_uninstall() {
 
     // Delete all associated H5P files.
     // First get all files.
-    $eportfoliofiles = $DB->get_records('files',['component' => 'mod_eportfolio', 'filearea' => 'eportfolio']);
+    $eportfoliofiles = $DB->get_records('files', ['component' => 'mod_eportfolio', 'filearea' => 'eportfolio']);
 
     foreach ($eportfoliofiles as $eport) {
 

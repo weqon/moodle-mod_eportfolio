@@ -30,7 +30,7 @@ $string['modulename'] = 'ePortfolio Bewertung';
 $string['modulenameplural'] = 'ePortfolio Bewertung';
 $string['pluginadministration'] = 'ePortfolio Bewertung Administration';
 
-// db/access - permissions.
+// Capabilities - db/access - permissions.
 $string['eportfolio:grade_eport'] = 'ePortfolio bewerten';
 $string['eportfolio:view_eport'] = 'ePortfolio anzeigen';
 
@@ -69,7 +69,7 @@ $string['message:smallmessage'] =
 $string['message:subject'] = 'Mitteilung über eine neue Bewertung für Ihr ePortfolio';
 $string['message:contexturlname'] = 'Bewertung für ePortfolio anzeigen';
 
-// Delete shared ePortfolio
+// Delete shared ePortfolio.
 $string['delete:header'] = 'Neue Freigabe erlauben?';
 $string['delete:confirm'] = 'Löschen bestätigen';
 $string['delete:checkconfirm'] = '<b>Möchten Sie für die ausgewählte Datei wirklich eine neue Freigabe erlauben?</b><br><br>

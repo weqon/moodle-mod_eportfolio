@@ -25,8 +25,7 @@
 require(__DIR__ . '/../../config.php');
 require_once('locallib.php');
 require_once('lib.php');
-require_once('grade_form.php');
-require_once($CFG->dirroot . "/local/eportfolio/locallib.php");
+require_once('classes/forms/grade_form.php');
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -38,16 +37,19 @@ $action = optional_param('action', 0, PARAM_ALPHA);
 $fileid = optional_param('fileid', 0, PARAM_INT);
 $userid = optional_param('userid', 0, PARAM_INT);
 
+$tsort = optional_param('tsort', '', PARAM_ALPHA);
+$tdir = optional_param('tdir', 0, PARAM_INT);
+
 // We need this in case an ePortfolio will be deleted.
 $confirm = optional_param('confirm', '', PARAM_ALPHANUM);
 
 if ($id) {
     $cm = get_coursemodule_from_id('eportfolio', $id, 0, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance = $DB->get_record('eportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('eportfolio', ['id' => $cm->instance], '*', MUST_EXIST);
 } else {
-    $moduleinstance = $DB->get_record('eportfolio', array('id' => $e), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('eportfolio', ['id' => $e], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('eportfolio', $moduleinstance->id, $course->id, false, MUST_EXIST);
 }
 
@@ -55,12 +57,21 @@ require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
 
-$url = new moodle_url('/mod/eportfolio/view.php', array('id' => $cm->id));
+$params = [
+        'id' => $cm->id,
+];
 
-$event = \mod_eportfolio\event\course_module_viewed::create(array(
+if ($tsort || $tdir) {
+    $params['tsort'] = $tsort;
+    $params['tdir'] = $tdir;
+}
+
+$url = new moodle_url('/mod/eportfolio/view.php', $params);
+
+$event = \mod_eportfolio\event\course_module_viewed::create([
         'objectid' => $moduleinstance->id,
-        'context' => $modulecontext
-));
+        'context' => $modulecontext,
+]);
 $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot('eportfolio', $moduleinstance);
 $event->trigger();
@@ -96,21 +107,21 @@ if (check_current_eportfolio_course($course->id)) {
 
         if ($gradeexists) {
 
-            $setdata = array(
+            $setdata = [
                     'grade' => $gradeexists->grade,
                     'feedbacktext' => $gradeexists->feedbacktext,
-            );
+            ];
 
         }
 
-        $customdata = array(
+        $customdata = [
                 'userid' => $userid,
                 'cmid' => $cm->id,
                 'fileid' => $fileid,
                 'courseid' => $course->id,
-        );
+        ];
 
-        $gradeurl = new moodle_url('/mod/eportfolio/view.php', array('id' => $cm->id, 'action' => 'grade'));
+        $gradeurl = new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'action' => 'grade']);
 
         $mform = new grade_form($gradeurl, $customdata);
         $mform->set_data($setdata);
@@ -269,14 +280,14 @@ if (check_current_eportfolio_course($course->id)) {
 
             $userfullname = fullname($user);
 
-            $optionsyes = array(
+            $optionsyes = [
                     'id' => $id,
                     'fileid' => $fileid,
                     'action' => 'delete',
                     'delete' => $fileid,
                     'userid' => $userid,
                     'confirm' => md5($fileid),
-            );
+            ];
 
             echo $OUTPUT->heading(get_string('delete:header', 'mod_eportfolio'));
 
@@ -284,10 +295,10 @@ if (check_current_eportfolio_course($course->id)) {
             $deletebutton = new single_button($deleteurl,
                     get_string('delete:confirm', 'mod_eportfolio'), 'post');
 
-            $stringparams = array(
+            $stringparams = [
                     'filename' => $filename,
                     'username' => $userfullname,
-            );
+            ];
 
             echo $OUTPUT->confirm(get_string('delete:checkconfirm', 'mod_eportfolio', $stringparams), $deletebutton, $deleteurl);
             echo $OUTPUT->footer();
@@ -308,7 +319,7 @@ if (check_current_eportfolio_course($course->id)) {
             // Delete the entry in eportfolio_share table.
             $DB->delete_records('local_eportfolio_share', ['id' => $eportfolioshare->id]);
 
-            // We use the pathnamehash to get the H5P file
+            // We use the pathnamehash to get the H5P file.
             $pathnamehash = $file->get_pathnamehash();
 
             $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $pathnamehash]);
@@ -317,7 +328,7 @@ if (check_current_eportfolio_course($course->id)) {
             if ($h5pfile) {
 
                 $DB->delete_records('h5p', ['id' => $h5pfile->id]);
-                // Also delete from files where context = 1, itemid = h5p id component core_h5p, filearea content
+                // Also delete from files where context = 1, itemid = h5p id component core_h5p, filearea content.
                 $fs->delete_area_files('1', 'core_h5p', 'content', $h5pfile->id);
 
             }
@@ -328,8 +339,8 @@ if (check_current_eportfolio_course($course->id)) {
                 \local_eportfolio\event\eportfolio_deleted::create([
                         'other' => [
                                 'description' => get_string('event:eportfolio:deleted', 'mod_eportfolio',
-                                        array('userid' => $USER->id, 'filename' => $file->get_filename(),
-                                                'itemid' => $file->get_id())),
+                                        ['userid' => $USER->id, 'filename' => $file->get_filename(),
+                                                'itemid' => $file->get_id()]),
                         ],
                 ])->trigger();
 
@@ -347,7 +358,7 @@ if (check_current_eportfolio_course($course->id)) {
         }
     } else {
         // Generate table with all eportfolios shared for grading for this course.
-        eportfolio_render_overview_table($course->id, $cm->id, $url);
+        eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
 
     }
 

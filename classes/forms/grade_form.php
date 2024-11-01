@@ -22,11 +22,21 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once("$CFG->libdir/formslib.php");
 require_once($CFG->dirroot . "/mod/eportfolio/locallib.php");
 
+/**
+ * Viewing the grade form.
+ */
 class grade_form extends moodleform {
 
+    /**
+     * Building the form.
+     *
+     * @return void
+     */
     public function definition() {
         global $DB;
 
@@ -48,7 +58,8 @@ class grade_form extends moodleform {
         $mform->setType('grade', PARAM_INT);
         $mform->addHelpButton('grade', 'gradeform:grade', 'mod_eportfolio');
 
-        $mform->addElement('textarea', 'feedbacktext', get_string('gradeform:feedbacktext', 'mod_eportfolio'), 'wrap="virtual" rows="10" cols="30"');
+        $mform->addElement('textarea', 'feedbacktext', get_string('gradeform:feedbacktext', 'mod_eportfolio'),
+                'wrap="virtual" rows="10" cols="30"');
 
         $mform->addElement('html', '<hr><hr>');
 

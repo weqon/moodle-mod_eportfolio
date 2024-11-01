@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,10 +23,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$messageproviders = array (
-    // ePortfolio grading notification.
-        'grading' => array(
+defined('MOODLE_INTERNAL') || die();
+
+$messageproviders = [
+    // The ePortfolio grading notification.
+        'grading' => [
                 'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
                 'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-        ),
-);
+        ],
+];

@@ -24,8 +24,6 @@
 
 namespace mod_eportfolio\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_eportfolio course module viewed event.
  *
@@ -46,7 +44,12 @@ class course_module_viewed extends \core\event\course_module_viewed {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
+    /**
+     * Returns localised event name.
+     *
+     * @return string[]
+     */
     public static function get_objectid_mapping() {
-        return array('db' => 'eportfolio', 'restore' => 'eportfolio');
+        return ['db' => 'eportfolio', 'restore' => 'eportfolio'];
     }
 }
