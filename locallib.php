@@ -419,14 +419,14 @@ function get_shared_eportfolios($shareoption = 'share', $courseid = '', $tsort =
 function get_my_shared_eportfolios($context, $shareoption = 'share', $courseid = '', $tsort = '', $tdir = '') {
     global $USER, $DB;
 
-    $sql = "SELECT * FROM {local_eportfolio_share} WHERE userid = ? AND shareoption = ?";
+    $sql = "SELECT * FROM {local_eportfolio_share} WHERE usermodified = ? AND shareoption = ?";
 
     if ($courseid) {
         $sql .= " AND courseid = ?";
     }
 
     $params = [
-            'userid' => $USER->id,
+            'usermodified' => $USER->id,
             'shareoption' => $shareoption,
             'courseid' => $courseid,
     ];

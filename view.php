@@ -92,6 +92,8 @@ if (check_current_eportfolio_course($course->id)) {
     // Icon Table -> Grading - if activity is set.
 
     $coursecontext = context_course::instance($course->id);
+    // ToDo: Check, if current user has role for grading.
+    // Remove the capability "grade_eport".
     if ($action === 'grade' && has_capability('mod/eportfolio:grade_eport', $coursecontext)) {
 
         if (!$fileid) {
