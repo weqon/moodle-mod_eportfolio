@@ -231,11 +231,12 @@ function get_shared_eportfolios($shareoption = 'share', $courseid = '', $tsort =
             }
         }
 
-        if (is_enrolled($coursecontext, $USER) && $es->userid != $USER->id) {
+        if (is_enrolled($coursecontext, $USER) && $es->usermodified != $USER->id) {
 
-            $sharedeportfolios[$es->id]['itemid'] = $es->fileitemid;
+            $sharedeportfolios[$es->id]['id'] = $es->id;
+            $sharedeportfolios[$es->id]['itemid'] = $es->fileid;
             $sharedeportfolios[$es->id]['fileidcontext'] = $es->fileidcontext;
-            $sharedeportfolios[$es->id]['userid'] = $es->userid;
+            $sharedeportfolios[$es->id]['userid'] = $es->usermodified;
             $sharedeportfolios[$es->id]['courseid'] = $es->courseid;
             $sharedeportfolios[$es->id]['cmid'] = ($shareoption === 'grade') ? $es->cmid : '';
             $sharedeportfolios[$es->id]['fullcourse'] = ($shareoption === 'grade') ? '1' : $es->fullcourse;
@@ -342,7 +343,7 @@ function get_shared_eportfolios($shareoption = 'share', $courseid = '', $tsort =
                             $course = $DB->get_record('course', ['id' => $value['courseid']]);
 
                             $fileviewurlparams = [
-                                    'id' => $fileid,
+                                    'id' => $value['id'],
                                     'course' => $course->id,
                                     'userid' => $value['userid'],
                             ];
@@ -353,6 +354,7 @@ function get_shared_eportfolios($shareoption = 'share', $courseid = '', $tsort =
 
                             $eportfolios[$i]['fileviewurl'] = new moodle_url('/local/eportfolio/view.php',
                                     $fileviewurlparams);
+                            $eportfolios[$i]['id'] = $value['id'];
                             $eportfolios[$i]['fileitemid'] = $file->get_id();
                             $eportfolios[$i]['fileidcontext'] = $value['fileidcontext'];
                             $eportfolios[$i]['filename'] = $file->get_filename();
@@ -453,7 +455,7 @@ function get_my_shared_eportfolios($context, $shareoption = 'share', $courseid =
 
                 if ($file->get_filename() != '.') {
 
-                    $fileid = $sp->fileitemid;
+                    $fileid = $sp->fileid;
 
                     if ($courseid) {
                         $fileid = $sp->fileidcontext;
@@ -471,6 +473,7 @@ function get_my_shared_eportfolios($context, $shareoption = 'share', $courseid =
 
                         $eportfolios[$sp->id]['fileviewurl'] =
                                 new moodle_url('/local/eportfolio/view.php', ['id' => $viewurlid]);
+                        $eportfolios[$sp->id]['id'] = $sp->id;
                         $eportfolios[$sp->id]['fileitemid'] = $file->get_id();
                         $eportfolios[$sp->id]['fileidcontext'] = $sp->fileidcontext;
                         $eportfolios[$sp->id]['filename'] = $file->get_filename();
@@ -552,17 +555,21 @@ function get_h5p_title($pathnamehash) {
 
     $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $pathnamehash]);
 
-    $json = $h5pfile->jsoncontent;
-    $jsondecode = json_decode($json);
+    if ($h5pfile) {
+        $json = $h5pfile->jsoncontent;
+        $jsondecode = json_decode($json);
 
-    if ($jsondecode->metadata->title) {
-        $title = $jsondecode->metadata->title;
-    } else {
-        $title = $jsondecode->title;
-    }
+        if (isset($jsondecode->metadata)) {
+            if ($jsondecode->metadata->title) {
+                $title = $jsondecode->metadata->title;
+            }
+        } else {
+            $title = $jsondecode->title;
+        }
 
-    if (!empty($title)) {
-        return $title;
+        if (!empty($title)) {
+            return $title;
+        }
     }
 }
 
