@@ -47,6 +47,11 @@ function xmldb_eportfolio_uninstall() {
 
     }
 
+    // Delete all area files for specific context and component.
+    // local_eportfolio_share -> get courseid -> course context.
+    #delete_area_files($contextid, $component = false, $filearea = false, $itemid = false) {
+
+    }
     // Delete entries from table local_eportfolio_share where shared for grading.
     if (!$DB->delete_records('local_eportfolio_share', ['shareoption' => 'grade'])) {
         return false;

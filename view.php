@@ -107,6 +107,8 @@ if (check_current_eportfolio_course($course->id)) {
         $gradeexists = $DB->get_record('eportfolio_grade',
                 ['userid' => $userid, 'itemid' => $fileid, 'cmid' => $cm->id]);
 
+        $setdata = '';
+
         if ($gradeexists) {
 
             $setdata = [
@@ -199,7 +201,7 @@ if (check_current_eportfolio_course($course->id)) {
             // Convert display options to a valid object.
             $factory = new \core_h5p\factory();
             $core = $factory->get_core();
-            $config = core_h5p\helper::decode_display_options($core, $modulecontext->displayoptions);
+            $config = core_h5p\helper::decode_display_options($core, 0);
 
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
@@ -233,7 +235,7 @@ if (check_current_eportfolio_course($course->id)) {
         // Convert display options to a valid object.
         $factory = new \core_h5p\factory();
         $core = $factory->get_core();
-        $config = core_h5p\helper::decode_display_options($core, $modulecontext->displayoptions);
+        $config = core_h5p\helper::decode_display_options($core, 0);
 
         $fs = get_file_storage();
         $file = $fs->get_file_by_id($fileid);
@@ -248,7 +250,6 @@ if (check_current_eportfolio_course($course->id)) {
 
         // Get the user who shared the ePortfolio for grading.
         $user = $DB->get_record('user', ['id' => $userid]);
-        $grade = $DB->get_record('eportfolio_grade', ['cmid' => $cm->id, 'itemid' => $fileid]);
 
         $data = new stdClass();
 
@@ -258,11 +259,17 @@ if (check_current_eportfolio_course($course->id)) {
         $data->timecreated = date('d.m.Y', $h5pfile->timecreated);
         $data->h5pplayer = \core_h5p\player::display($fileurl, $config, false, 'local_eportfolio', false);
 
-        $grader = $DB->get_record('user', ['id' => $grade->graderid]);
+        $grade = $DB->get_record('eportfolio_grade', ['cmid' => $cm->id, 'itemid' => $fileid]);
 
-        $data->grade = $grade->grade . ' %';
-        $data->gradetext = format_text($grade->feedbacktext);
-        $data->grader = fullname($grader);
+        if (!empty($grade->graderid)) {
+            $grader = $DB->get_record('user', ['id' => $grade->graderid]);
+
+            if (!empty($grader)) {
+                $data->grade = $grade->grade . ' %';
+                $data->gradetext = format_text($grade->feedbacktext);
+                $data->grader = fullname($grader);
+            }
+        }
 
         echo $OUTPUT->render_from_template('mod_eportfolio/eportfolio_view', $data);
 
@@ -316,7 +323,7 @@ if (check_current_eportfolio_course($course->id)) {
 
             // Get entry from local_eportfolio_share.
             $eportfolioshare = $DB->get_record('local_eportfolio_share', ['fileidcontext' => $data->fileid,
-                    'shareoption' => 'grade', 'userid' => $data->userid]);
+                    'shareoption' => 'grade', 'usermodified' => $data->userid]);
 
             // Delete the entry in eportfolio_share table.
             $DB->delete_records('local_eportfolio_share', ['id' => $eportfolioshare->id]);

@@ -48,9 +48,13 @@ class grade_form extends moodleform {
         $courseid = $this->_customdata['courseid'];
 
         $mform->addElement('hidden', 'userid', $userid);
+        $mform->setType('userid', PARAM_INT);
         $mform->addElement('hidden', 'cmid', $cmid);
+        $mform->setType('cmid', PARAM_INT);
         $mform->addElement('hidden', 'fileid', $itemid);
+        $mform->setType('fileid', PARAM_INT);
         $mform->addElement('hidden', 'courseid', $courseid);
+        $mform->setType('courseid', PARAM_INT);
 
         $mform->addElement('html', '<h3>' . get_string('gradeform:header', 'mod_eportfolio') . '</h3><br>');
 

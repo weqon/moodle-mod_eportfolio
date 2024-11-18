@@ -237,6 +237,9 @@ function get_shared_eportfolios($shareoption = 'share', $courseid = '', $tsort =
             $sharedeportfolios[$es->id]['itemid'] = $es->fileid;
             $sharedeportfolios[$es->id]['fileidcontext'] = $es->fileidcontext;
             $sharedeportfolios[$es->id]['userid'] = $es->usermodified;
+
+            $user = $DB->get_record('user', ['id' => $es->usermodified]);
+            $sharedeportfolios[$es->id]['userfullname'] = fullname($user);
             $sharedeportfolios[$es->id]['courseid'] = $es->courseid;
             $sharedeportfolios[$es->id]['cmid'] = ($shareoption === 'grade') ? $es->cmid : '';
             $sharedeportfolios[$es->id]['fullcourse'] = ($shareoption === 'grade') ? '1' : $es->fullcourse;
@@ -496,6 +499,8 @@ function get_my_shared_eportfolios($context, $shareoption = 'share', $courseid =
                         }
 
                         $eportfolios[$sp->id]['userid'] = $USER->id;
+                        $user = $DB->get_record('user', ['id' => $USER->id]);
+                        $eportfolios[$sp->id]['userfullname'] = fullname($user);
 
                         $course = $DB->get_record('course', ['id' => $sp->courseid]);
 
