@@ -18,7 +18,7 @@
  * The main mod_eportfolio configuration form.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * Module instance settings form.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_eportfolio_mod_form extends moodleform_mod {

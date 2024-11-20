@@ -18,7 +18,7 @@
  * Display information about all the mod_eportfolio modules in the requested course.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@ require_course_login($course);
 $coursecontext = context_course::instance($course->id);
 
 $event = \mod_eportfolio\event\course_module_instance_list_viewed::create([
-        'context' => $modulecontext,
+        'context' => $coursecontext,
 ]);
 $event->add_record_snapshot('course', $course);
 $event->trigger();

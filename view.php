@@ -18,14 +18,12 @@
  * Prints an instance of mod_eportfolio.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require(__DIR__ . '/../../config.php');
 require_once('locallib.php');
-require_once('lib.php');
-require_once('classes/forms/grade_form.php');
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -33,9 +31,7 @@ $id = optional_param('id', 0, PARAM_INT);
 // Activity instance id.
 $e = optional_param('e', 0, PARAM_INT);
 
-$action = optional_param('action', 0, PARAM_ALPHA);
-$fileid = optional_param('fileid', 0, PARAM_INT);
-$userid = optional_param('userid', 0, PARAM_INT);
+$eportid = optional_param('eportid', 0, PARAM_INT);
 
 $tsort = optional_param('tsort', '', PARAM_ALPHA);
 $tdir = optional_param('tdir', 0, PARAM_INT);
@@ -85,294 +81,16 @@ echo $OUTPUT->header();
 
 // Check if this course is marked as eportfolio course.
 if (check_current_eportfolio_course($course->id)) {
-    // Get all shared ePortfolios for this course.
-    // ToDo: Check for specifc roles, groups or users.
-    // Own Function in localllib.
-    // Mustache Template.
-    // Icon Table -> Grading - if activity is set.
-
-    $coursecontext = context_course::instance($course->id);
-    // ToDo: Check, if current user has role for grading.
-    // Remove the capability "grade_eport".
-    if ($action === 'grade' && has_capability('mod/eportfolio:grade_eport', $coursecontext)) {
-
-        if (!$fileid) {
-            die('no file found');
-        }
-        if (!$userid) {
-            die('no user found');
-        }
-
-        // Check, if a grade exists.
-        $gradeexists = $DB->get_record('eportfolio_grade',
-                ['userid' => $userid, 'itemid' => $fileid, 'cmid' => $cm->id]);
-
-        $setdata = '';
-
-        if ($gradeexists) {
-
-            $setdata = [
-                    'grade' => $gradeexists->grade,
-                    'feedbacktext' => $gradeexists->feedbacktext,
-            ];
-
-        }
-
-        $customdata = [
-                'userid' => $userid,
-                'cmid' => $cm->id,
-                'fileid' => $fileid,
-                'courseid' => $course->id,
-        ];
-
-        $gradeurl = new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'action' => 'grade']);
-
-        $mform = new grade_form($gradeurl, $customdata);
-        $mform->set_data($setdata);
-
-        if ($formdata = $mform->is_cancelled()) {
-
-            redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]));
-
-        } else if ($formdata = $mform->get_data()) {
-
-            // Get activity instance id from table eportfolio.
-            $instanceid = $DB->get_record('eportfolio', ['course' => $course->id]);
-
-            $data = new stdClass();
-
-            $data->userid = $formdata->userid;
-            $data->cmid = $formdata->cmid;
-            $data->itemid = $formdata->fileid;
-            $data->courseid = $formdata->courseid;
-            $data->graderid = $USER->id;
-            $data->instance = $instanceid->id;
-            $data->grade = $formdata->grade;
-            $data->feedbacktext = $formdata->feedbacktext;
-
-            // Send message to inform user about new or updated grade.
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($data->itemid);
-
-            $message = eportfolio_send_grading_message($data->courseid, $data->graderid, $data->userid,
-                    $file->get_filename(), $data->itemid, $data->cmid);
-
-            if ($gradeexists) {
-
-                $data->id = $gradeexists->id;
-                $data->timemodified = time();
-
-                if ($DB->update_record('eportfolio_grade', $data)) {
-
-                    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
-                            get_string('grade:update:success', 'mod_eportfolio'),
-                            null, \core\output\notification::NOTIFY_SUCCESS);
-
-                } else {
-
-                    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
-                            get_string('grade:update:error', 'mod_eportfolio'),
-                            null, \core\output\notification::NOTIFY_ERROR);
-
-                }
-
-            } else {
-
-                $data->timecreated = time();
-
-                if ($DB->insert_record('eportfolio_grade', $data)) {
-
-                    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
-                            get_string('grade:insert:success', 'mod_eportfolio'),
-                            null, \core\output\notification::NOTIFY_SUCCESS);
-
-                } else {
-
-                    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
-                            get_string('grade:insert:error', 'mod_eportfolio'),
-                            null, \core\output\notification::NOTIFY_ERROR);
-
-                }
-
-            }
-
-        } else {
-
-            // Convert display options to a valid object.
-            $factory = new \core_h5p\factory();
-            $core = $factory->get_core();
-            $config = core_h5p\helper::decode_display_options($core, 0);
-
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($fileid);
-
-            $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                    $file->get_filearea(), $file->get_itemid(), $file->get_filepath(),
-                    $file->get_filename(), false);
-
-            // Get the real times for created and modified.
-            $pathnamehash = $file->get_pathnamehash();
-            $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $pathnamehash]);
-
-            // Get the user who shared the ePortfolio for grading.
-            $user = $DB->get_record('user', ['id' => $userid]);
-
-            $data = new stdClass();
-
-            $data->userfullname = fullname($user);
-            $data->backurl = $url;
-            $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
-            $data->timecreated = date('d.m.Y', $h5pfile->timecreated);
-            $data->h5pplayer = \core_h5p\player::display($fileurl, $config, false, 'local_eportfolio', false);
-            $data->gradeform = $mform->render();
-
-            echo $OUTPUT->render_from_template('mod_eportfolio/eportfolio_grading', $data);
-
-        }
-
-    } else if ($action === 'view') {
-
-        // Convert display options to a valid object.
-        $factory = new \core_h5p\factory();
-        $core = $factory->get_core();
-        $config = core_h5p\helper::decode_display_options($core, 0);
-
-        $fs = get_file_storage();
-        $file = $fs->get_file_by_id($fileid);
-
-        $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                $file->get_filearea(), $file->get_itemid(), $file->get_filepath(),
-                $file->get_filename(), false);
-
-        // Get the real times for created and modified.
-        $pathnamehash = $file->get_pathnamehash();
-        $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $pathnamehash]);
-
-        // Get the user who shared the ePortfolio for grading.
-        $user = $DB->get_record('user', ['id' => $userid]);
-
-        $data = new stdClass();
-
-        $data->userfullname = fullname($user);
-        $data->backurl = $url;
-        $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
-        $data->timecreated = date('d.m.Y', $h5pfile->timecreated);
-        $data->h5pplayer = \core_h5p\player::display($fileurl, $config, false, 'local_eportfolio', false);
-
-        $grade = $DB->get_record('eportfolio_grade', ['cmid' => $cm->id, 'itemid' => $fileid]);
-
-        if (!empty($grade->graderid)) {
-            $grader = $DB->get_record('user', ['id' => $grade->graderid]);
-
-            if (!empty($grader)) {
-                $data->grade = $grade->grade . ' %';
-                $data->gradetext = format_text($grade->feedbacktext);
-                $data->grader = fullname($grader);
-            }
-        }
-
-        echo $OUTPUT->render_from_template('mod_eportfolio/eportfolio_view', $data);
-
-    } else if ($action === 'delete') {
-
-        if ($confirm != md5($fileid)) {
-
-            // Get filename.
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($fileid);
-            $pathnamehash = $file->get_pathnamehash();
-
-            $filename = get_h5p_title($pathnamehash);
-
-            // Get username.
-            $user = $DB->get_record('user', ['id' => $userid]);
-
-            $userfullname = fullname($user);
-
-            $optionsyes = [
-                    'id' => $id,
-                    'fileid' => $fileid,
-                    'action' => 'delete',
-                    'delete' => $fileid,
-                    'userid' => $userid,
-                    'confirm' => md5($fileid),
-            ];
-
-            echo $OUTPUT->heading(get_string('delete:header', 'mod_eportfolio'));
-
-            $deleteurl = new moodle_url('view.php', $optionsyes);
-            $deletebutton = new single_button($deleteurl,
-                    get_string('delete:confirm', 'mod_eportfolio'), 'post');
-
-            $stringparams = [
-                    'filename' => $filename,
-                    'username' => $userfullname,
-            ];
-
-            echo $OUTPUT->confirm(get_string('delete:checkconfirm', 'mod_eportfolio', $stringparams), $deletebutton, $deleteurl);
-            echo $OUTPUT->footer();
-            die;
-
-        } else if (data_submitted()) {
-
-            $data = data_submitted();
-
-            // Get file storage for further processing.
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($data->fileid);
-
-            // Get entry from local_eportfolio_share.
-            $eportfolioshare = $DB->get_record('local_eportfolio_share', ['fileidcontext' => $data->fileid,
-                    'shareoption' => 'grade', 'usermodified' => $data->userid]);
-
-            // Delete the entry in eportfolio_share table.
-            $DB->delete_records('local_eportfolio_share', ['id' => $eportfolioshare->id]);
-
-            // We use the pathnamehash to get the H5P file.
-            $pathnamehash = $file->get_pathnamehash();
-
-            $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $pathnamehash]);
-
-            // If H5P, delete it from the H5P table as well.
-            if ($h5pfile) {
-
-                $DB->delete_records('h5p', ['id' => $h5pfile->id]);
-                // Also delete from files where context = 1, itemid = h5p id component core_h5p, filearea content.
-                $fs->delete_area_files('1', 'core_h5p', 'content', $h5pfile->id);
-
-            }
-
-            if ($file->delete()) {
-
-                // Trigger event for withdrawing sharing of ePortfolio.
-                \local_eportfolio\event\eportfolio_deleted::create([
-                        'other' => [
-                                'description' => get_string('event:eportfolio:deleted', 'mod_eportfolio',
-                                        ['userid' => $USER->id, 'filename' => $file->get_filename(),
-                                                'itemid' => $file->get_id()]),
-                        ],
-                ])->trigger();
-
-                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $id]),
-                        get_string('delete:success', 'mod_eportfolio'),
-                        null, \core\output\notification::NOTIFY_SUCCESS);
-
-            }
-
-        } else {
-
-            redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $id]),
-                    get_string('delete:error', 'local_eportfolio'),
-                    null, \core\output\notification::NOTIFY_ERROR);
-        }
-    } else {
-        // Generate table with all eportfolios shared for grading for this course.
-        eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
-
-    }
+    // Also check, if the assigned roles in local_eportfolio have the right capabilities.
+    // ToDo: check_role_capability();.
+
+    // Generate table with all eportfolios shared for grading for this course.
+    eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
 
 } else {
-    echo "Dieser Kurs ist kein ePortfolio Kurs!";
+    // This course is not marked as ePortfolio course.
+    $data = new stdClass();
+    echo $OUTPUT->render_from_template('mod_eportfolio/noeportfolio_course', $data);
 }
 
 echo $OUTPUT->footer();

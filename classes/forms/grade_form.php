@@ -16,9 +16,8 @@
 
 /**
  *
- *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG {@link https://weqon.net}
+ * @copyright   2024 weQon UG {@link https://weqon.net}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,18 +41,15 @@ class grade_form extends moodleform {
 
         $mform = $this->_form; // Don't forget the underscore!
 
-        $userid = $this->_customdata['userid'];
-        $cmid = $this->_customdata['cmid'];
-        $itemid = $this->_customdata['fileid'];
-        $courseid = $this->_customdata['courseid'];
-
-        $mform->addElement('hidden', 'userid', $userid);
+        $mform->addElement('hidden', 'eportid', $this->_customdata['eportid']);
+        $mform->setType('eportid', PARAM_INT);
+        $mform->addElement('hidden', 'userid', $this->_customdata['userid']);
         $mform->setType('userid', PARAM_INT);
-        $mform->addElement('hidden', 'cmid', $cmid);
+        $mform->addElement('hidden', 'cmid', $this->_customdata['cmid']);
         $mform->setType('cmid', PARAM_INT);
-        $mform->addElement('hidden', 'fileid', $itemid);
-        $mform->setType('fileid', PARAM_INT);
-        $mform->addElement('hidden', 'courseid', $courseid);
+        $mform->addElement('hidden', 'fileidcontext', $this->_customdata['fileidcontext']);
+        $mform->setType('fileidcontext', PARAM_INT);
+        $mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
         $mform->setType('courseid', PARAM_INT);
 
         $mform->addElement('html', '<h3>' . get_string('gradeform:header', 'mod_eportfolio') . '</h3><br>');

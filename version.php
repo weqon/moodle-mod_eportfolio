@@ -18,15 +18,15 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_eportfolio';
-$plugin->release = '0.1.1';
-$plugin->version = 2023102900;
+$plugin->release = '0.2.0';
+$plugin->version = 2024112000;
 $plugin->requires = 2021051700;
 $plugin->maturity = MATURITY_RC;
 $plugin->dependencies = [

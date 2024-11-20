@@ -19,7 +19,7 @@
  *
  * @package     mod_eportfolio
  * @category    string
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,14 +29,28 @@ $string['pluginname'] = 'ePortfolio Bewertung';
 $string['modulename'] = 'ePortfolio Bewertung';
 $string['modulenameplural'] = 'ePortfolio Bewertung';
 $string['pluginadministration'] = 'ePortfolio Bewertung Administration';
+$string['eportfolioname'] = 'Titel'; // Mod form.
 
 // Capabilities - db/access - permissions.
 $string['eportfolio:grade_eport'] = 'ePortfolio bewerten';
 $string['eportfolio:view_eport'] = 'ePortfolio anzeigen';
 
-$string['eportfolioname'] = 'Titel';
+$string['error:noeportfoliocourse'] = 'Dieser Kurs wurde nicht als ePortfolio Kurs markiert!';
+$string['error:noeportfolios:found'] = 'Aktuell liegen keine ePortfolios zur Bewertung vor!';
+$string['error:noeportfolio:file:found'] = 'Die aufgerufene Datei konnte nicht gefunden werden!';
+$string['error:missingcapability:actions'] =
+        'Sie haben nicht die erforderlichen Berechtigungen, um die gewählte Aktion auszuführen!';
+
+$string['actions:header'] = 'Aktion ausführen';
+
 
 // Overview table.
+$string['overview:table:title'] = 'Titel';
+$string['overview:table:userfullname'] = 'Geteilt von';
+$string['overview:table:sharestart'] = 'Geteilt am';
+$string['overview:table:grade'] = 'Bewertung';
+$string['overview:table:actions'] = 'Aktionen';
+
 $string['overview:table:btn:grade'] = 'Bewerten';
 $string['overview:table:btn:view'] = 'Anzeigen';
 $string['overview:table:btn:delete'] = 'Neue Freigabe erlauben';
@@ -57,6 +71,7 @@ $string['grade:insert:success'] = 'Ihre Bewertung wurde erfolgreich gespeichert!
 $string['grade:insert:error'] = 'Beim Speichern der Benotung ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
 $string['grade:update:success'] = 'Ihre Bewertung wurde erfolgreich aktualisiert!';
 $string['grade:update:error'] = 'Beim Aktualisieren der Benotung ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
+$string['grade:cancelled'] = 'Die Bewertung wurde abgebrochen!';
 
 // Message provider.
 $string['messageprovider:grading'] = 'Mitteilung über neue Bewertungen für ePortfolio';
@@ -73,11 +88,20 @@ $string['message:contexturlname'] = 'Bewertung für ePortfolio anzeigen';
 $string['delete:header'] = 'Neue Freigabe erlauben?';
 $string['delete:confirm'] = 'Löschen bestätigen';
 $string['delete:checkconfirm'] = '<b>Möchten Sie für die ausgewählte Datei wirklich eine neue Freigabe erlauben?</b><br><br>
-Dateiname: {$a->filename}<br>Eingereicht von: {$a->username}<br><br><b>Die eingereichte Datei und bestehende Bewertungen werden gelöscht!</b>';
+<b>Die eingereichte Datei und bestehende Bewertungen werden gelöscht!</b>';
 $string['delete:success'] = 'Datei wurde erfolgreich gelöscht!';
 $string['delete:error'] = 'Beim Löschen der Datei ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
 
 // Events.
 $string['event:eportfolio:deleted:name'] = 'ePortfolio aus Bewertung gelöscht';
 $string['event:eportfolio:deleted'] =
-        'The user with the id \'{$a->userid}\' deleted ePortfolio {$a->filename} (itemid: \'{$a->itemid}\')';
+        'The user with the id \'{$a->userid}\' deleted ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:viewgrading:name'] = 'ePortfolio Bewertung angezeigt';
+$string['event:eportfolio:viewgrading'] =
+        'The user with the id \'{$a->userid}\' viewed grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:newgrading:name'] = 'ePortfolio neue Bewertung';
+$string['event:eportfolio:newgrading'] =
+        'The user with the id \'{$a->userid}\' added new grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:updatedgrade:name'] = 'ePortfolio Bewertung aktualisiert';
+$string['event:eportfolio:updatedgrade'] =
+        'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';

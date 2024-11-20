@@ -18,16 +18,27 @@
  * Plugin capabilities
  *
  * @package    mod_eportfolio
- * @copyright 2023 weQon UG {@link https://weqon.net}
+ * @copyright 2024 weQon UG {@link https://weqon.net}
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-        'mod/eportfolio:view_eport' => [
-                'captype' => 'view',
+        'mod/eportfolio:addinstance' => [
+                'riskbitmask' => RISK_XSS,
+                'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => [
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
+
+        'mod/eportfolio:view' => [
+                'captype' => 'view',
+                'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
@@ -38,7 +49,7 @@ $capabilities = [
 
         'mod/eportfolio:grade_eport' => [
                 'captype' => 'view',
-                'contextlevel' => CONTEXT_COURSE,
+                'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW,

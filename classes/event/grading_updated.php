@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_eportfolio delete event.
+ * The mod_eportfolio grade updated event.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_eportfolio\event;
 
 /**
- * The mod_eportfolio instance eportfolio deleted event class.
+ * The mod_eportfolio grade updated event.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_eportfolio_deleted extends \core\event\base {
+class grading_updated extends \core\event\course_module_viewed {
 
     /**
      * Init method.
@@ -39,8 +39,6 @@ class course_eportfolio_deleted extends \core\event\base {
      * @return void
      */
     protected function init() {
-        global $USER;
-        $this->context = \context_user::instance($USER->id);
         $this->data['objecttable'] = 'eportfolio';
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -52,7 +50,7 @@ class course_eportfolio_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('event:eportfolio:deleted:name', 'mod_eportfolio');
+        return get_string('event:eportfolio:updatedgrade:name', 'mod_eportfolio');
     }
 
     /**
@@ -62,9 +60,7 @@ class course_eportfolio_deleted extends \core\event\base {
      */
     public function get_description() {
         $description = $this->other['description'];
-
         return $description;
-
     }
 
     /**
@@ -80,5 +76,4 @@ class course_eportfolio_deleted extends \core\event\base {
             throw new \coding_exception('The \'description\' value must be set.');
         }
     }
-
 }

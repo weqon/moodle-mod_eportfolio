@@ -18,8 +18,7 @@
  * Plugin upgrade steps are defined here.
  *
  * @package     mod_eportfolio
- * @category    upgrade
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -118,6 +117,51 @@ function xmldb_eportfolio_upgrade($oldversion) {
 
         // Eportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2023080304, 'eportfolio');
+    }
+
+    if ($oldversion < 2024111900) {
+
+        // Rename field itemid on table eportfolio_grade to fileidcontext.
+        $table = new xmldb_table('eportfolio_grade');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'instance');
+
+        // Launch rename field itemid.
+        $dbman->rename_field($table, $field, 'fileidcontext');
+
+        // Define field usermodified to be added to eportfolio_grade.
+        $table = new xmldb_table('eportfolio_grade');
+        $field = new xmldb_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'feedbacktext');
+
+        // Conditionally launch add field usermodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key usermodified (foreign) to be added to eportfolio_grade.
+        $table = new xmldb_table('eportfolio_grade');
+        $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Launch add key usermodified.
+        $dbman->add_key($table, $key);
+
+        // Define field usermodified to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'introformat');
+
+        // Conditionally launch add field usermodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key usermodified (foreign) to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Launch add key usermodified.
+        $dbman->add_key($table, $key);
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2024111900, 'eportfolio');
     }
 
     return true;

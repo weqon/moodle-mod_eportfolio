@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_eportfolio course module viewed event.
+ * The mod_eportfolio instance list viewed event.
  *
  * @package     mod_eportfolio
  * @copyright   2024 weQon UG <support@weqon.net>
@@ -25,31 +25,25 @@
 namespace mod_eportfolio\event;
 
 /**
- * The mod_eportfolio course module viewed event.
+ * The mod_eportfolio instance list viewed event class.
  *
  * @package     mod_eportfolio
  * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_module_viewed extends \core\event\course_module_viewed {
-
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
     /**
-     * Init method.
+     * Create the event from course record.
      *
-     * @return void
+     * @param \stdClass $course
+     * @return course_module_instance_list_viewed
      */
-    protected function init() {
-        $this->data['objecttable'] = 'eportfolio';
-        $this->data['crud'] = 'r';
-        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-    }
-
-    /**
-     * Returns localised event name.
-     *
-     * @return string[]
-     */
-    public static function get_objectid_mapping() {
-        return ['db' => 'eportfolio', 'restore' => 'eportfolio'];
+    public static function create_from_course(\stdClass $course) {
+        $params = [
+                'context' => \context_course::instance($course->id),
+        ];
+        $event = self::create($params);
+        $event->add_record_snapshot('course', $course);
+        return $event;
     }
 }

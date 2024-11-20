@@ -18,7 +18,7 @@
  * Library of interface functions and constants.
  *
  * @package     mod_eportfolio
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -70,7 +70,7 @@ function eportfolio_supports($feature) {
  * @return int The id of the newly inserted record.
  */
 function eportfolio_add_instance($moduleinstance, $mform = null) {
-    global $DB;
+    global $DB, $USER;
 
     // Check, if already an instance for this course is available.
     $exists = $DB->get_record('eportfolio', ['course' => $moduleinstance->course]);
@@ -85,6 +85,7 @@ function eportfolio_add_instance($moduleinstance, $mform = null) {
     }
 
     $moduleinstance->timecreated = time();
+    $moduleinstance->usermodified = $USER->id;
 
     $id = $DB->insert_record('eportfolio', $moduleinstance);
 
@@ -102,9 +103,10 @@ function eportfolio_add_instance($moduleinstance, $mform = null) {
  * @return bool True if successful, false otherwise.
  */
 function eportfolio_update_instance($moduleinstance, $mform = null) {
-    global $DB;
+    global $DB, $USER;
 
     $moduleinstance->timemodified = time();
+    $moduleinstance->usermodified = $USER->id;
     $moduleinstance->id = $moduleinstance->instance;
 
     return $DB->update_record('eportfolio', $moduleinstance);
@@ -183,112 +185,4 @@ function eportfolio_delete_instance($id) {
     }
 
     return $result;
-}
-
-/**
- * Is a given scale used by the instance of mod_eportfolio?
- *
- * This function returns if a scale is being used by one mod_eportfolio
- * if it has support for grading and scales.
- *
- * @param int $moduleinstanceid ID of an instance of this module.
- * @param int $scaleid ID of the scale.
- * @return bool True if the scale is used by the given mod_eportfolio instance.
- */
-function eportfolio_scale_used($moduleinstanceid, $scaleid) {
-    global $DB;
-
-    if ($scaleid && $DB->record_exists('eportfolio', ['id' => $moduleinstanceid, 'grade' => -$scaleid])) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/*
- * The following features are currently not in use.
- * We will keep them in case we need them at any point.
- */
-
-/**
- * Checks if scale is being used by any instance of mod_eportfolio.
- *
- * This is used to find out if scale used anywhere.
- *
- * @param int $scaleid ID of the scale.
- * @return bool True if the scale is used by any mod_eportfolio instance.
- */
-function eportfolio_scale_used_anywhere($scaleid) {
-    global $DB;
-
-    if ($scaleid && $DB->record_exists('eportfolio', ['grade' => -$scaleid])) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
- * Creates or updates grade item for the given mod_eportfolio instance.
- *
- * Needed by {@see grade_update_mod_grades()}.
- *
- * @param stdClass $moduleinstance Instance object with extra cmidnumber and modname property.
- * @param bool $reset Reset grades in the gradebook.
- * @return void.
- */
-function eportfolio_grade_item_update($moduleinstance, $reset = false) {
-    global $CFG;
-    require_once($CFG->libdir . '/gradelib.php');
-
-    $item = [];
-    $item['itemname'] = clean_param($moduleinstance->name, PARAM_NOTAGS);
-    $item['gradetype'] = GRADE_TYPE_VALUE;
-
-    if ($moduleinstance->grade > 0) {
-        $item['gradetype'] = GRADE_TYPE_VALUE;
-        $item['grademax'] = $moduleinstance->grade;
-        $item['grademin'] = 0;
-    } else if ($moduleinstance->grade < 0) {
-        $item['gradetype'] = GRADE_TYPE_SCALE;
-        $item['scaleid'] = -$moduleinstance->grade;
-    } else {
-        $item['gradetype'] = GRADE_TYPE_NONE;
-    }
-    if ($reset) {
-        $item['reset'] = true;
-    }
-
-    grade_update('/mod/eportfolio', $moduleinstance->course, 'mod', 'mod_eportfolio', $moduleinstance->id, 0, null, $item);
-}
-
-/**
- * Delete grade item for given mod_eportfolio instance.
- *
- * @param stdClass $moduleinstance Instance object.
- * @return grade_item.
- */
-function eportfolio_grade_item_delete($moduleinstance) {
-    global $CFG;
-    require_once($CFG->libdir . '/gradelib.php');
-
-    return grade_update('/mod/eportfolio', $moduleinstance->course, 'mod', 'eportfolio',
-            $moduleinstance->id, 0, null, ['deleted' => 1]);
-}
-
-/**
- * Update mod_eportfolio grades in the gradebook.
- *
- * Needed by {@see grade_update_mod_grades()}.
- *
- * @param stdClass $moduleinstance Instance object with extra cmidnumber and modname property.
- * @param int $userid Update grade of specific user only, 0 means all participants.
- */
-function eportfolio_update_grades($moduleinstance, $userid = 0) {
-    global $CFG, $DB;
-    require_once($CFG->libdir . '/gradelib.php');
-
-    // Populate array of grade objects indexed by userid.
-    $grades = [];
-    grade_update('/mod/eportfolio', $moduleinstance->course, 'mod', 'mod_eportfolio', $moduleinstance->id, 0, $grades);
 }

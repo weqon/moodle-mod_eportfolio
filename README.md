@@ -25,6 +25,12 @@ Alternatively, you can run
 
 to complete the installation from the command line.
 
+## Relase notes ##
+
+**Version 0.2.0**
+
+- Complete code overhaul and refactoring.
+
 ## License ##
 
 2024 weQon UG <support@weqon.net>

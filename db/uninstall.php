@@ -18,8 +18,7 @@
  * Code that is executed before the tables and data are dropped during the plugin uninstallation.
  *
  * @package     mod_eportfolio
- * @category    upgrade
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,25 +33,27 @@ function xmldb_eportfolio_uninstall() {
     $eportfoliofiles = $DB->get_records('files', ['component' => 'mod_eportfolio', 'filearea' => 'eportfolio']);
 
     foreach ($eportfoliofiles as $eport) {
-
         // Delete the H5P files based on the pathnamehash.
         if ($eport->filename != '.') {
-
             $h5pfile = $DB->get_record('h5p', ['pathnamehash' => $eport->pathnamehash]);
 
-            if ($h5pfile) {
+            if (!empty($h5pfile)) {
                 $DB->delete_records('h5p', ['id' => $h5pfile->id]);
             }
         }
-
     }
 
-    // Delete all area files for specific context and component.
-    // local_eportfolio_share -> get courseid -> course context.
-    #delete_area_files($contextid, $component = false, $filearea = false, $itemid = false) {
-
+    // Get all files shared for grading.
+    $sharedfiles = $DB->get_records('local_eportfolio_share', ['shareoption' => 'grade']);
+    if (!empty($sharedfiles)) {
+        foreach ($sharedfiles as $sf) {
+            $fs = get_file_storage();
+            $file = $fs->get_file_by_id($sf->fileidcontext);
+            $file->delete();
+        }
     }
-    // Delete entries from table local_eportfolio_share where shared for grading.
+
+    // Finally, delete entries from table local_eportfolio_share where shared for grading.
     if (!$DB->delete_records('local_eportfolio_share', ['shareoption' => 'grade'])) {
         return false;
     }

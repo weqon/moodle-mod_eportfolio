@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_eportfolio course module viewed event.
+ * The mod_eportfolio grading viewed event.
  *
  * @package     mod_eportfolio
  * @copyright   2024 weQon UG <support@weqon.net>
@@ -25,13 +25,13 @@
 namespace mod_eportfolio\event;
 
 /**
- * The mod_eportfolio course module viewed event.
+ * The mod_eportfolio grading viewed event.
  *
  * @package     mod_eportfolio
  * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_module_viewed extends \core\event\course_module_viewed {
+class grading_viewed extends \core\event\course_module_viewed {
 
     /**
      * Init method.
@@ -47,9 +47,33 @@ class course_module_viewed extends \core\event\course_module_viewed {
     /**
      * Returns localised event name.
      *
-     * @return string[]
+     * @return string
      */
-    public static function get_objectid_mapping() {
-        return ['db' => 'eportfolio', 'restore' => 'eportfolio'];
+    public static function get_name() {
+        return get_string('event:eportfolio:viewgrading:name', 'mod_eportfolio');
+    }
+
+    /**
+     * Returns non-localised event description with id's for admin use only.
+     *
+     * @return string
+     */
+    public function get_description() {
+        $description = $this->other['description'];
+        return $description;
+    }
+
+    /**
+     * Custom validation.
+     *
+     * @return void
+     * @throws \coding_exception when validation does not pass.
+     */
+    protected function validate_data() {
+        parent::validate_data();
+
+        if (!isset($this->other['description'])) {
+            throw new \coding_exception('The \'description\' value must be set.');
+        }
     }
 }

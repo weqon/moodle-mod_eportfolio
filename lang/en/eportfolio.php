@@ -19,7 +19,7 @@
  *
  * @package     mod_eportfolio
  * @category    string
- * @copyright   2023 weQon UG <support@weqon.net>
+ * @copyright   2024 weQon UG <support@weqon.net>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,14 +29,27 @@ $string['pluginname'] = 'ePortfolio Grading';
 $string['modulename'] = 'ePortfolio Grading';
 $string['modulenameplural'] = 'ePortfolio Grading';
 $string['pluginadministration'] = 'ePortfolio Grading administration';
+$string['eportfolioname'] = 'Title'; // Mod form.
 
 // Capabilities - db/access - permissions.
 $string['eportfolio:grade_eport'] = 'Grade ePortfolio';
 $string['eportfolio:view_eport'] = 'View ePortfolio';
 
-$string['eportfolioname'] = 'Title';
+$string['error:noeportfoliocourse'] = 'This course has not been marked as an ePortfolio course!';
+$string['error:noeportfolios:found'] = 'There are currently no ePortfolios available for grading!';
+$string['error:noeportfolio:file:found'] = 'The requested file could not be found!';
+$string['error:missingcapability:actions'] =
+        'You do not have the required capabilities to perform the selected action!';
+
+$string['actions:header'] = 'Perform action';
 
 // Overview table.
+$string['overview:table:title'] = 'Filename/Title';
+$string['overview:table:userfullname'] = 'Shared by';
+$string['overview:table:sharestart'] = 'Shared on';
+$string['overview:table:grade'] = 'Grading';
+$string['overview:table:actions'] = 'Actions';
+
 $string['overview:table:btn:grade'] = 'Add grading';
 $string['overview:table:btn:view'] = 'View grading';
 $string['overview:table:btn:delete'] = 'Allow new submission';
@@ -57,6 +70,7 @@ $string['grade:insert:success'] = 'Your grading has been successfully saved!';
 $string['grade:insert:error'] = 'An error occurred while saving the grading! Please try again!';
 $string['grade:update:success'] = 'Your grading has been successfully updated!';
 $string['grade:update:error'] = 'An error occurred while updating the grading! Please try again!';
+$string['grade:cancelled'] = 'The grading was cancelled!';
 
 // Message provider.
 $string['messageprovider:grading'] = 'Notification about new assessments for ePortfolio';
@@ -73,11 +87,20 @@ $string['message:contexturlname'] = 'View grade for ePortfolio';
 $string['delete:header'] = 'Allow new submission?';
 $string['delete:confirm'] = 'Confirm';
 $string['delete:checkconfirm'] = '<b>Do you really want to allow a new submission for this file?</b><br><br>
-Filename: {$a->filename}<br>Shared by: {$a->username}<br><br><b>The submitted file and any existing grades will also be deleted!</b>';
+<b>The submitted file and any existing grades will also be deleted!</b>';
 $string['delete:success'] = 'The selected file was deleted successfully!';
 $string['delete:error'] = 'There was an error while deleting the file! Please try again!';
 
 // Events.
 $string['event:eportfolio:deleted:name'] = 'ePortfolio deleted';
 $string['event:eportfolio:deleted'] =
-        'The user with the id \'{$a->userid}\' deleted ePortfolio {$a->filename} (itemid: \'{$a->itemid}\')';
+        'The user with the id \'{$a->userid}\' deleted ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:viewgrading:name'] = 'ePortfolio grade viewed';
+$string['event:eportfolio:viewgrading'] =
+        'The user with the id \'{$a->userid}\' viewed grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:newgrading:name'] = 'ePortfolio new grade';
+$string['event:eportfolio:newgrading'] =
+        'The user with the id \'{$a->userid}\' added new grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+$string['event:eportfolio:updatedgrade:name'] = 'ePortfolio updated grade';
+$string['event:eportfolio:updatedgrade'] =
+        'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
