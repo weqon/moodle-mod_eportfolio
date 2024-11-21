@@ -104,3 +104,10 @@ $string['event:eportfolio:newgrading'] =
 $string['event:eportfolio:updatedgrade:name'] = 'ePortfolio updated grade';
 $string['event:eportfolio:updatedgrade'] =
         'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+
+// Privacy provider.
+$string['privacy:metadata:mod_eportfolio'] = 'Data shared by the ePortfolio plugin';
+$string['privacy:metadata:mod_eportfolio:usermodified'] = 'The ID of the user who created/updated the ePortfolio activity';
+$string['privacy:metadata:mod_eportfolio:grade:usermodified'] = 'The ID of the user who created/updated the ePortfolio grade';
+$string['privacy:metadata:mod_eportfolio:grade:userid'] = 'The ID of the user who received the ePortfolio grade';
+$string['privacy:metadata:mod_eportfolio:grade:graderid'] = 'The ID of the user who created/updated the ePortfolio grade';

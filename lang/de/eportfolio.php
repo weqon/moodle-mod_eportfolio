@@ -43,7 +43,6 @@ $string['error:missingcapability:actions'] =
 
 $string['actions:header'] = 'Aktion ausführen';
 
-
 // Overview table.
 $string['overview:table:title'] = 'Titel';
 $string['overview:table:userfullname'] = 'Geteilt von';
@@ -105,3 +104,11 @@ $string['event:eportfolio:newgrading'] =
 $string['event:eportfolio:updatedgrade:name'] = 'ePortfolio Bewertung aktualisiert';
 $string['event:eportfolio:updatedgrade'] =
         'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+
+// Privacy provider.
+$string['privacy:metadata:mod_eportfolio'] = 'Vom ePortfolio-Plugin freigegebene Daten';
+$string['privacy:metadata:mod_eportfolio:usermodified'] = 'Nutzer:innen ID, die die ePortfolio Aktivität angelegt/bearbeitet hat';
+$string['privacy:metadata:mod_eportfolio:grade:usermodified'] =
+        'Nutzer:innen ID, die die ePortfolio Bewertung angelegt/bearbeitet hat';
+$string['privacy:metadata:mod_eportfolio:grade:userid'] = 'Nutzer:innen ID, die die ePortfolio Bewertung erhalten hat';
+$string['privacy:metadata:mod_eportfolio:grade:graderid'] = 'Nutzer:innen ID, die die ePortfolio Bewertung durchgeführt hat';
