@@ -76,10 +76,10 @@ $string['grade:cancelled'] = 'Die Bewertung wurde abgebrochen!';
 $string['messageprovider:grading'] = 'Mitteilung über neue Bewertungen für ePortfolio';
 $string['message:emailmessage'] =
         '<p>Für Sie wurde eine neue Bewertung hinterlegt.<br>Eingereichtes ePortfolio: {$a->filename}<br>Kurs: {$a->coursename}<br>
-<br>Bewertet durch: {$a->userfrom}<br>URL zur Einreichung: {$a->viewurl}</p>';
+<br>Bewertet durch: {$a->userfrom}<br>URL zur Einreichung: <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:smallmessage'] =
         '<p>Für Sie wurde eine neue Bewertung hinterlegt.<br>Eingereichtes ePortfolio: {$a->filename}<br>Kurs: {$a->coursename}<br>
-<br>Bewertet durch: {$a->userfrom}<br>URL zur Einreichung: {$a->viewurl}</p>';
+<br>Bewertet durch: {$a->userfrom}<br>URL zur Einreichung:  <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:subject'] = 'Mitteilung über eine neue Bewertung für Ihr ePortfolio';
 $string['message:contexturlname'] = 'Bewertung für ePortfolio anzeigen';
 

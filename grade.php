@@ -113,14 +113,6 @@ if (check_current_eportfolio_course($course->id)) {
                 $data->feedbacktext = $formdata->feedbacktext;
                 $data->usermodified = $USER->id;
 
-                // Send message to inform user about new or updated grade.
-                $fs = get_file_storage();
-                $file = $fs->get_file_by_id($data->fileidcontext);
-
-                // ToDo: Make adhoc task.
-                $message = eportfolio_send_grading_message($data->courseid, $data->graderid, $data->userid,
-                        $file->get_filename(), $data->fileidcontext, $data->cmid);
-
                 if (!empty($gradeexists)) {
 
                     $data->id = $gradeexists->id;
@@ -128,12 +120,46 @@ if (check_current_eportfolio_course($course->id)) {
 
                     if ($DB->update_record('eportfolio_grade', $data)) {
 
+                        // Send message to inform user about new or updated grade.
+                        $fs = get_file_storage();
+                        $file = $fs->get_file_by_id($data->fileidcontext);
+
+                        $filename = '';
+                        if (!empty($file)) {
+                            $filename = $file->get_filename();
+                        }
+
+                        $h5pfilename = get_h5p_title($data->fileidcontext);
+
+                        if (!empty($eport->title)) {
+                            $filename = $eport->title;
+                        } else if (!empty($h5pfilename)) {
+                            $filename = $h5pfilename;
+                        }
+
+                        // Prepare task data.
+                        $task = new \mod_eportfolio\task\send_messages();
+
+                        $taskdata = new stdClass();
+
+                        $taskdata->courseid = $data->courseid;
+                        $taskdata->cmid = $data->cmid;
+                        $taskdata->userfrom = $data->graderid;
+                        $taskdata->userto = $data->userid;
+                        $taskdata->filename = $filename;
+                        $taskdata->fileid = $data->fileidcontext;
+
+                        $task->set_custom_data($taskdata);
+
+                        // Queue the task.
+                        \core\task\manager::queue_adhoc_task($task);
+
                         $event = \mod_eportfolio\event\grading_updated::create([
                                 'objectid' => $moduleinstance->id,
                                 'context' => $modulecontext,
                                 'other' => [
                                         'description' => get_string('event:eportfolio:updatedgrade', 'mod_eportfolio',
-                                                ['userid' => $USER->id, 'filename' => $file->get_filename(),
+                                                ['userid' => $USER->id, 'filename' => $filename,
                                                         'fileidcontext' => $eport->fileidcontext]),
                                 ],
                         ]);
@@ -159,12 +185,46 @@ if (check_current_eportfolio_course($course->id)) {
 
                     if ($DB->insert_record('eportfolio_grade', $data)) {
 
-                        $event = \mod_eportfolio\event\grading_new::create([
+                        // Send message to inform user about new or updated grade.
+                        $fs = get_file_storage();
+                        $file = $fs->get_file_by_id($data->fileidcontext);
+
+                        $filename = '';
+                        if (!empty($file)) {
+                            $filename = $file->get_filename();
+                        }
+
+                        $h5pfilename = get_h5p_title($data->fileidcontext);
+
+                        if (!empty($eport->title)) {
+                            $filename = $eport->title;
+                        } else if (!empty($h5pfilename)) {
+                            $filename = $h5pfilename;
+                        }
+
+                        // Prepare task data.
+                        $task = new \mod_eportfolio\task\send_messages();
+
+                        $taskdata = new stdClass();
+
+                        $taskdata->courseid = $data->courseid;
+                        $taskdata->cmid = $data->cmid;
+                        $taskdata->userfrom = $data->graderid;
+                        $taskdata->userto = $data->userid;
+                        $taskdata->filename = $filename;
+                        $taskdata->fileid = $data->fileidcontext;
+
+                        $task->set_custom_data($taskdata);
+
+                        // Queue the task.
+                        \core\task\manager::queue_adhoc_task($task);
+
+                        $event = \mod_eportfolio\event\grading_updated::create([
                                 'objectid' => $moduleinstance->id,
                                 'context' => $modulecontext,
                                 'other' => [
-                                        'description' => get_string('event:eportfolio:newgrading', 'mod_eportfolio',
-                                                ['userid' => $USER->id, 'filename' => $file->get_filename(),
+                                        'description' => get_string('event:eportfolio:updatedgrade', 'mod_eportfolio',
+                                                ['userid' => $USER->id, 'filename' => $filename,
                                                         'fileidcontext' => $eport->fileidcontext]),
                                 ],
                         ]);

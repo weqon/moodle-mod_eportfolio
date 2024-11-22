@@ -76,10 +76,10 @@ $string['grade:cancelled'] = 'The grading was cancelled!';
 $string['messageprovider:grading'] = 'Notification about new assessments for ePortfolio';
 $string['message:emailmessage'] =
         '<p>A new grade has been added for you.<br>ePortfolio: {$a->filename}<br>Course: {$a->coursename}<br>
-<br>Grading by: {$a->userfrom}<br>URL: {$a->viewurl}</p>';
+<br>Grading by: {$a->userfrom}<br>URL:  <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:smallmessage'] =
         '<p>A new grade has been added for you.<br>ePortfolio: {$a->filename}<br>Course: {$a->coursename}<br>
-<br>Grading by: {$a->userfrom}<br>URL: {$a->viewurl}</p>';
+<br>Grading by: {$a->userfrom}<br>URL:  <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:subject'] = 'Notification about new assessments for ePortfolio';
 $string['message:contexturlname'] = 'View grade for ePortfolio';
 

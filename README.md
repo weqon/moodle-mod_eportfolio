@@ -29,7 +29,8 @@ to complete the installation from the command line.
 
 **Version 0.2.0**
 
-- Complete code overhaul and refactoring.
+- Added adhoc task for sending notifications
+- Complete code overhaul and refactoring
 
 ## License ##
 
