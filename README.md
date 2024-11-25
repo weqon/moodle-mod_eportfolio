@@ -27,9 +27,14 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
+**Version 0.2.1**
+
+- Added backup and restore classes
+
 **Version 0.2.0**
 
 - Added adhoc task for sending notifications
+- Added privacy provider class
 - Complete code overhaul and refactoring
 
 ## License ##
