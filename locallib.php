@@ -43,7 +43,7 @@ function check_current_eportfolio_course($courseid) {
 
     $params = [
             'shortname' => 'eportfolio_course',
-            'instanceid' => $courseid,
+            'instanceid' => (int) $courseid,
     ];
 
     $customfielddata = $DB->get_record_sql($sql, $params);
@@ -202,11 +202,11 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = '', $
 function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
     global $DB;
 
-    $sql = "SELECT * FROM {local_eportfolio_share} WHERE shareoption = ? AND courseid = ?";
+    $sql = "SELECT * FROM {local_eportfolio_share} WHERE shareoption = :shareoption AND courseid = :courseid";
 
     $params = [
             'shareoption' => 'grade', // It's always grade at this point.
-            'courseid' => $courseid,
+            'courseid' => (int) $courseid,
     ];
 
     // If user ID is set, we assume the user is accessing the page.
