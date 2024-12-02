@@ -25,20 +25,23 @@
 namespace mod_eportfolio\privacy;
 
 use core_privacy\local\metadata\collection;
-use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\writer;
 use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
-use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\contextlist;
+
+use stdClass;
 
 /**
  * Privacy provider implementation for mod_eportfolio plugin.
  */
 class provider implements
         \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider,
-        core_userlist_provider {
+        \core_privacy\local\request\core_userlist_provider,
+        \core_privacy\local\request\plugin\provider {
 
     /**
      * Returns metadata about the data stored by the plugin.
@@ -68,7 +71,7 @@ class provider implements
      * @return contextlist The list of contexts.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
-        return contextlist();
+        return $contextlist = new contextlist();
     }
 
     /**

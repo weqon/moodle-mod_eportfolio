@@ -29,8 +29,8 @@ $messageproviders = [
     // The ePortfolio grading notification.
         'grading' => [
                 'defaults' => [
-                        'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-                        'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+                        'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+                        'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
                 ],
         ],
 ];

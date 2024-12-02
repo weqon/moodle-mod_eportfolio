@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @param int $courseid
  * @return bool
  */
-function check_current_eportfolio_course($courseid) {
+function eportfolio_check_current_eportfolio_course($courseid) {
     global $DB;
 
     // Check, if the current course is marked as ePortfolio course.
@@ -65,7 +65,7 @@ function check_current_eportfolio_course($courseid) {
  * @param int $tdir
  * @return void
  */
-function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = '', $tdir = '') {
+function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null) {
     global $DB, $USER, $OUTPUT;
 
     $coursemodulecontext = context_module::instance($cmid);
@@ -77,10 +77,10 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = '', $
 
         $actionsallowed = true;
 
-        $entry = get_eportfolios($courseid, 0, $tsort, $tdir);
+        $entry = eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir);
 
     } else {
-        $entry = get_eportfolios($courseid, $USER->id, $tsort, $tdir);
+        $entry = eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir);
     }
 
     // View all ePortfolios shared for grading.
@@ -118,6 +118,7 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = '', $
         $table->sortable(true, 'fullusername', SORT_ASC);
         $table->initialbars(true);
         $table->no_sorting('actions');
+        $table->no_sorting('grade');
         $table->setup();
 
         $deletebtn = '';
@@ -199,7 +200,7 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = '', $
  * @param int $tdir
  * @return array
  */
-function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
+function eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
     global $DB;
 
     $sql = "SELECT * FROM {local_eportfolio_share} WHERE shareoption = :shareoption AND courseid = :courseid";
@@ -211,8 +212,8 @@ function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
 
     // If user ID is set, we assume the user is accessing the page.
     if (!empty($userid)) {
-        $sql .= " AND usermodified = ?";
-        $params['userid'] = $userid;
+        $sql .= " AND usermodified = :usermodified";
+        $params['usermodified'] = $userid;
     }
 
     // If tsort and tdir is set.
@@ -220,16 +221,14 @@ function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
 
     if ($tsort) {
 
-        $orderby = get_sort_order($tdir);
+        $orderby = eportfolio_get_sort_order($tdir);
 
         if ($tsort === 'title') {
             $orderbyfield = 'title';
         } else if ($tsort === 'userfullname') {
-            $orderbyfield = 'userfullname';
+            $orderbyfield = 'usermodified';
         } else if ($tsort === 'sharestart') {
-            $orderbyfield = 'sharestart';
-        } else if ($tsort === 'grade') {
-            $orderbyfield = 'grade';
+            $orderbyfield = 'timecreated';
         }
 
         $sortorder = " ORDER BY " . $orderbyfield . " " . $orderby;
@@ -239,6 +238,8 @@ function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
     if (!empty($sortorder)) {
         $sql .= $sortorder;
     }
+
+    #print_object($sql); die;
 
     $eportfoliosshare = $DB->get_records_sql($sql, $params);
 
@@ -251,7 +252,7 @@ function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
         $user = $DB->get_record('user', ['id' => $es->usermodified]);
 
         $eport->eportid = $es->id;
-        $eport->title = (!empty($es->title)) ? $es->title : get_h5p_title($es->fileidcontext);
+        $eport->title = (!empty($es->title)) ? $es->title : eportfolio_get_h5p_title($es->fileidcontext);
         $eport->fileidcontext = $es->fileidcontext;
         $eport->usermodified = $es->usermodified;
         $eport->userfullname = fullname($user);
@@ -270,7 +271,7 @@ function get_eportfolios($courseid, $userid = '', $tsort = '', $tdir = '') {
  * @param int $sortorder
  * @return int|void
  */
-function get_sort_order($sortorder) {
+function eportfolio_get_sort_order($sortorder) {
     switch ($sortorder) {
         case '3':
             return 'DESC';
@@ -289,7 +290,7 @@ function get_sort_order($sortorder) {
  * @param int $fileidcontext
  * @return void
  */
-function get_h5p_title($fileidcontext) {
+function eportfolio_get_h5p_title($fileidcontext) {
     global $DB;
 
     $fs = get_file_storage();

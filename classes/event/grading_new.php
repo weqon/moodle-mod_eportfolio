@@ -24,6 +24,8 @@
 
 namespace mod_eportfolio\event;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * The mod_eportfolio new grade event.
  *
@@ -40,7 +42,7 @@ class grading_new extends \core\event\course_module_viewed {
      */
     protected function init() {
         $this->data['objecttable'] = 'eportfolio';
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 

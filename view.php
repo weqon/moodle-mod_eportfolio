@@ -80,7 +80,7 @@ $PAGE->set_context($modulecontext);
 echo $OUTPUT->header();
 
 // Check if this course is marked as eportfolio course.
-if (check_current_eportfolio_course($course->id)) {
+if (eportfolio_check_current_eportfolio_course($course->id)) {
     // Also check, if the assigned roles in local_eportfolio have the right capabilities.
     // ToDo: check_role_capability();.
 

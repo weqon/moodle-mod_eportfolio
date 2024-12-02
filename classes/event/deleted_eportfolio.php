@@ -24,6 +24,8 @@
 
 namespace mod_eportfolio\event;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * The mod_eportfolio instance eportfolio deleted event class.
  *
@@ -40,7 +42,7 @@ class deleted_eportfolio extends \core\event\base {
      */
     protected function init() {
         $this->data['objecttable'] = 'eportfolio';
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 

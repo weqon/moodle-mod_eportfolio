@@ -24,6 +24,8 @@
 
 namespace mod_eportfolio\event;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * The mod_eportfolio grading viewed event.
  *
