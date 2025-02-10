@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @param int $courseid
  * @return bool
  */
-function eportfolio_check_current_eportfolio_course($courseid) {
+function mod_eportfolio_check_current_eportfolio_course($courseid) {
     global $DB;
 
     // Check, if the current course is marked as ePortfolio course.
@@ -65,7 +65,7 @@ function eportfolio_check_current_eportfolio_course($courseid) {
  * @param int $tdir
  * @return void
  */
-function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null) {
+function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null) {
     global $DB, $USER, $OUTPUT;
 
     $coursemodulecontext = context_module::instance($cmid);
@@ -77,10 +77,10 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null,
 
         $actionsallowed = true;
 
-        $entry = eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir);
+        $entry = mod_eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir);
 
     } else {
-        $entry = eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir);
+        $entry = mod_eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir);
     }
 
     // View all ePortfolios shared for grading.
@@ -126,9 +126,9 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null,
         foreach ($entry as $ent) {
 
             $params = [
-                    'courseid' => $courseid,
-                    'cmid' => $cmid,
-                    'fileidcontext' => $ent->fileidcontext,
+                    'courseid' => (int) $courseid,
+                    'cmid' => (int) $cmid,
+                    'fileidcontext' => (int) $ent->fileidcontext,
             ];
 
             $getgrade = $DB->get_record('eportfolio_grade', $params);
@@ -200,7 +200,7 @@ function eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null,
  * @param int $tdir
  * @return array
  */
-function eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
+function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
     global $DB;
 
     $sql = "SELECT * FROM {local_eportfolio_share} WHERE shareoption = :shareoption AND courseid = :courseid";
@@ -213,14 +213,13 @@ function eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $t
     // If user ID is set, we assume the user is accessing the page.
     if (!empty($userid)) {
         $sql .= " AND usermodified = :usermodified";
-        $params['usermodified'] = $userid;
+        $params['usermodified'] = (int) $userid;
     }
 
     // If tsort and tdir is set.
     $sortorder = '';
 
     if ($tsort) {
-
         $orderby = eportfolio_get_sort_order($tdir);
 
         if ($tsort === 'title') {
@@ -232,14 +231,11 @@ function eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $t
         }
 
         $sortorder = " ORDER BY " . $orderbyfield . " " . $orderby;
-
     }
 
     if (!empty($sortorder)) {
         $sql .= $sortorder;
     }
-
-    #print_object($sql); die;
 
     $eportfoliosshare = $DB->get_records_sql($sql, $params);
 

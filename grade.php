@@ -52,7 +52,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 // Check if this course is marked as eportfolio course.
-if (eportfolio_check_current_eportfolio_course($course->id)) {
+if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
 
     // Check, if teacher or student is accessing this page.
     if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin()) {

@@ -80,12 +80,12 @@ $PAGE->set_context($modulecontext);
 echo $OUTPUT->header();
 
 // Check if this course is marked as eportfolio course.
-if (eportfolio_check_current_eportfolio_course($course->id)) {
+if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
     // Also check, if the assigned roles in local_eportfolio have the right capabilities.
     // ToDo: check_role_capability();.
 
     // Generate table with all eportfolios shared for grading for this course.
-    eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
+    mod_eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
 
 } else {
     // This course is not marked as ePortfolio course.
