@@ -32,8 +32,9 @@ $string['pluginadministration'] = 'ePortfolio Bewertung Administration';
 $string['eportfolioname'] = 'Titel'; // Mod form.
 
 // Capabilities - db/access - permissions.
+$string['eportfolio:addinstance'] = 'Neues ePortfolio Bewertung hinzufügen';
 $string['eportfolio:grade_eport'] = 'ePortfolio bewerten';
-$string['eportfolio:view_eport'] = 'ePortfolio anzeigen';
+$string['eportfolio:view'] = 'ePortfolio anzeigen';
 
 $string['error:noeportfoliocourse'] = 'Dieser Kurs wurde nicht als ePortfolio Kurs markiert!';
 $string['error:noeportfolios:found'] = 'Aktuell liegen keine ePortfolios zur Bewertung vor!';

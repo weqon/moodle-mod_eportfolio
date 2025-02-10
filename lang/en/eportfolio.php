@@ -32,8 +32,9 @@ $string['pluginadministration'] = 'ePortfolio Grading administration';
 $string['eportfolioname'] = 'Title'; // Mod form.
 
 // Capabilities - db/access - permissions.
+$string['eportfolio:addinstance'] = 'Add new ePortfolio Grading';
 $string['eportfolio:grade_eport'] = 'Grade ePortfolio';
-$string['eportfolio:view_eport'] = 'View ePortfolio';
+$string['eportfolio:view'] = 'View ePortfolio';
 
 $string['error:noeportfoliocourse'] = 'This course has not been marked as an ePortfolio course!';
 $string['error:noeportfolios:found'] = 'There are currently no ePortfolios available for grading!';
