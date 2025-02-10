@@ -99,7 +99,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
         $actionhelp = '';
 
         if ($actionsallowed) {
-            $actionhelp = html_writer::tag('button', '', ['class' => 'btn btn-default fa fa-question-circle ml-1',
+            $actionhelp = html_writer::tag('button', '', ['class' => 'btn btn-link fa fa-question-circle ml-1',
                     'data-toggle' => 'popover', 'data-container' => 'body', 'data-placement' => 'bottom',
                     'title' => get_string('overview:table:btn:delete', 'mod_eportfolio'),
                     'data-content' => get_string('overview:table:btn:delete:help', 'mod_eportfolio')]);
@@ -126,9 +126,9 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
         foreach ($entry as $ent) {
 
             $params = [
-                    'courseid' => (int) $courseid,
-                    'cmid' => (int) $cmid,
-                    'fileidcontext' => (int) $ent->fileidcontext,
+                    'courseid' => $courseid,
+                    'cmid' => $cmid,
+                    'fileidcontext' => $ent->fileidcontext,
             ];
 
             $getgrade = $DB->get_record('eportfolio_grade', $params);
@@ -192,7 +192,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 }
 
 /**
- * Get ePortfolios for user or grading teacher.
+ * Get ePortfolios for grading teacher.
  *
  * @param int $courseid
  * @param int $userid
@@ -203,7 +203,8 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
     global $DB;
 
-    $sql = "SELECT * FROM {local_eportfolio_share} WHERE shareoption = :shareoption AND courseid = :courseid";
+    $sql = "SELECT * FROM {local_eportfolio_share} 
+            WHERE shareoption = :shareoption AND courseid = :courseid";
 
     $params = [
             'shareoption' => 'grade', // It's always grade at this point.
@@ -220,7 +221,7 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
     $sortorder = '';
 
     if ($tsort) {
-        $orderby = eportfolio_get_sort_order($tdir);
+        $orderby = mod_eportfolio_get_sort_order($tdir);
 
         if ($tsort === 'title') {
             $orderbyfield = 'title';
@@ -248,12 +249,14 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
         $user = $DB->get_record('user', ['id' => $es->usermodified]);
 
         $eport->eportid = $es->id;
-        $eport->title = (!empty($es->title)) ? $es->title : eportfolio_get_h5p_title($es->fileidcontext);
+        $eport->title = (!empty($es->title)) ? $es->title : mod_eportfolio_get_h5p_title($es->fileidcontext);
         $eport->fileidcontext = $es->fileidcontext;
         $eport->usermodified = $es->usermodified;
         $eport->userfullname = fullname($user);
         $eport->courseid = $es->courseid;
         $eport->timecreated = $es->timecreated;
+        #$eport->grade = (!empty($es->grade)) ? $es->grade : './';
+        #$eport->feedbacktext = (!empty($es->feedbacktext)) ? $es->feedbacktext : './';
 
         $sharedeportfolios[] = $eport;
     }
@@ -267,7 +270,7 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
  * @param int $sortorder
  * @return int|void
  */
-function eportfolio_get_sort_order($sortorder) {
+function mod_eportfolio_get_sort_order($sortorder) {
     switch ($sortorder) {
         case '3':
             return 'DESC';
@@ -286,7 +289,7 @@ function eportfolio_get_sort_order($sortorder) {
  * @param int $fileidcontext
  * @return void
  */
-function eportfolio_get_h5p_title($fileidcontext) {
+function mod_eportfolio_get_h5p_title($fileidcontext) {
     global $DB;
 
     $fs = get_file_storage();
