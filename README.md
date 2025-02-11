@@ -27,6 +27,14 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
+**Version 0.2.2**
+
+- Fixed naming collisions
+- Added missing translation
+- Removed deprecated constants from message provider
+- Reworking the privacy provider
+- Optimized DB queries
+
 **Version 0.2.1**
 
 - Added backup and restore classes
