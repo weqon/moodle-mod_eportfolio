@@ -25,26 +25,26 @@
 namespace mod_eportfolio\privacy;
 
 use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadataprovider;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\plugin\provider as pluginprovider;
 use core_privacy\local\request\writer;
-use core_privacy\local\request\approved_userlist;
-use core_privacy\local\request\userlist;
-use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\helper;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 use coding_exception;
 use context;
+use context_module;
 use context_system;
 use dml_exception;
-use moodle_exception;
 
 /**
  * Privacy provider implementation for mod_eportfolio plugin.
  */
-class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider,
-        \core_privacy\local\request\core_userlist_provider {
+class provider implements metadataprovider, pluginprovider, core_userlist_provider {
 
     /**
      * Returns metadata about the data stored by the plugin.
@@ -143,86 +143,82 @@ class provider implements
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
-        $contexts = $contextlist->get_contexts();
+        $userid = $contextlist->get_user()->id;
 
-        if (empty($contexts)) {
-            return;
-        }
+        foreach ($contextlist as $context) {
+            if ($context->contextlevel == CONTEXT_MODULE) {
 
-        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-
-        $sql = "SELECT c.id AS contextid, e.id AS eportfolioid, cm.id AS cmid
+                $sql = "SELECT c.id AS contextid, e.id AS eportfolioid, cm.id AS cmid
                   FROM {context} c
                   JOIN {course_modules} cm ON cm.id = c.instanceid
                   JOIN {eportfolio} e ON e.id = cm.instance
-                 WHERE c.id {$contextsql}";
+                 WHERE c.id = :contextid";
 
-        $eportfolios = $DB->get_records_sql($sql, $contextparams);
+                $params = [
+                        'contextid' => $context->id,
+                ];
 
-        $userid = $contextlist->get_user()->id;
+                $eportfolios = $DB->get_records_sql($sql, $params);
 
-        foreach ($eportfolios as $eportfolio) {
-            $context = \context_module::instance($eportfolio->cmid);
+                foreach ($eportfolios as $eportfolio) {
 
-            // Check that the context is a module context.
-            if ($context->contextlevel != CONTEXT_MODULE) {
-                continue;
-            }
-
-            // Get user data who received a grade.
-            $sql = "SELECT eg.courseid, eg.userid, eg.grade, eg.feedbacktext, eg.timecreated, eg.timemodified, u.firstname, u.lastname
+                    // Get user data who received a grade.
+                    $sql = "SELECT eg.courseid, eg.userid, eg.grade, eg.feedbacktext, eg.timecreated, eg.timemodified, u.firstname, u.lastname
                     FROM {eportfolio_grade} eg
                     JOIN {user} u ON eg.userid = u.id
                     WHERE eg.userid = :userid AND instance = :instance";
 
-            $params = [
-                    'userid' => $userid,
-                    'instance' => $eportfolio->eportfolioid,
-            ];
+                    $params = [
+                            'userid' => $userid,
+                            'instance' => $eportfolio->eportfolioid,
+                    ];
 
-            $record = $DB->get_record_sql($sql, $params);
+                    $record = $DB->get_record_sql($sql, $params);
 
-            if (!empty($record)) {
+                    if (!empty($record)) {
 
-                $exportdata = (object) [
-                        'courseid' => $record->courseid,
-                        'userid' => $record->userid,
-                        'user' => $record->firstname . ' ' . $record->lastname,
-                        'grade' => $record->grade,
-                        'feedbacktext' => $record->feedbacktext,
-                        'timecreated' => date('d.m.Y', $record->timecreated),
-                        'timemodified' => date('d.m.Y', $record->timemodified),
-                ];
+                        $exportdata = (object) [
+                                'courseid' => $record->courseid,
+                                'userid' => $record->userid,
+                                'user' => $record->firstname . ' ' . $record->lastname,
+                                'grade' => $record->grade,
+                                'feedbacktext' => $record->feedbacktext,
+                                'timecreated' => date('d.m.Y', $record->timecreated),
+                                'timemodified' => date('d.m.Y', $record->timemodified),
+                        ];
 
-                writer::with_context($context)->export_data([], $exportdata);
-            }
+                        writer::with_context($context)->export_data([], $exportdata);
+                    }
 
-            // Get user data for grader.
-            $sqlgr = "SELECT eg.courseid, eg.graderid, eg.timecreated, eg.timemodified, u.firstname, u.lastname
+                    // Get user data for grader.
+                    $sqlgr = "SELECT eg.courseid, eg.graderid, eg.timecreated, eg.timemodified, u.firstname, u.lastname
                     FROM {eportfolio_grade} eg
                     JOIN {user} u ON eg.graderid = u.id
                     WHERE eg.graderid = :graderid AND instance = :instance";
-            $paramsgr = [
-                    'graderid' => $userid,
-                    'instance' => $eportfolio->eportfolioid,
-            ];
+                    $paramsgr = [
+                            'graderid' => $userid,
+                            'instance' => $eportfolio->eportfolioid,
+                    ];
 
-            $recordgr = $DB->get_record_sql($sqlgr, $paramsgr);
+                    $recordgr = $DB->get_record_sql($sqlgr, $paramsgr);
 
-            if (!empty($recordgr)) {
+                    if (!empty($recordgr)) {
 
-                $exportdata = (object) [
-                        'courseid' => $recordgr->courseid,
-                        'graderid' => $recordgr->graderid,
-                        'grader' => $recordgr->firstname . ' ' . $recordgr->lastname,
-                        'timecreated' => date('d.m.Y', $recordgr->timecreated),
-                        'timemodified' => date('d.m.Y', $recordgr->timemodified),
-                ];
+                        $exportdata = (object) [
+                                'courseid' => $recordgr->courseid,
+                                'graderid' => $recordgr->graderid,
+                                'grader' => $recordgr->firstname . ' ' . $recordgr->lastname,
+                                'timecreated' => date('d.m.Y', $recordgr->timecreated),
+                                'timemodified' => date('d.m.Y', $recordgr->timemodified),
+                        ];
 
-                writer::with_context($context)->export_data([], $exportdata);
+                        writer::with_context($context)->export_data([], $exportdata);
+                    }
+
+                }
             }
-
         }
+        return;
     }
 
     /**
