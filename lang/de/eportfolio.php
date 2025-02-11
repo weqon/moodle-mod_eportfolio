@@ -66,6 +66,7 @@ $string['gradeform:grade_help'] = 'Benotung in Prozent angeben.';
 $string['gradeform:feedbacktext'] = 'Feedback als Kommentar';
 $string['gradeform:gradeview'] = 'Benotung';
 $string['gradeform:grader'] = 'Bewertet durch';
+$string['gradeform:timegraded'] = 'Bewertet am';
 $string['gradeform:backbtn'] = 'Zurück zur Übersicht';
 
 // Insert & Update grading.
