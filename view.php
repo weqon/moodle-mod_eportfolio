@@ -36,6 +36,10 @@ $eportid = optional_param('eportid', 0, PARAM_INT);
 $tsort = optional_param('tsort', '', PARAM_ALPHA);
 $tdir = optional_param('tdir', 0, PARAM_INT);
 
+// Pagination bar.
+$perpage = optional_param('perpage', 25, PARAM_INT);
+$page = optional_param('page', 0, PARAM_INT);
+
 // We need this in case an ePortfolio will be deleted.
 $confirm = optional_param('confirm', '', PARAM_ALPHANUM);
 
@@ -62,6 +66,10 @@ if ($tsort || $tdir) {
     $params['tdir'] = $tdir;
 }
 
+if ($page) {
+    $params['page'] = $page;
+}
+
 $url = new moodle_url('/mod/eportfolio/view.php', $params);
 
 $event = \mod_eportfolio\event\course_module_viewed::create([
@@ -85,7 +93,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
     // ToDo: check_role_capability();.
 
     // Generate table with all eportfolios shared for grading for this course.
-    mod_eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir);
+    mod_eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir, $page, $perpage);
 
 } else {
     // This course is not marked as ePortfolio course.

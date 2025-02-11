@@ -31,6 +31,7 @@ $id = optional_param('id', 0, PARAM_INT);
 $eportid = required_param('eportid', PARAM_INT);
 
 $action = optional_param('action', 0, PARAM_ALPHA);
+$page = optional_param('page', 0, PARAM_INT);
 
 $cm = get_coursemodule_from_id('eportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
@@ -43,6 +44,10 @@ $modulecontext = context_module::instance($cm->id);
 $params = [
         'id' => $cm->id,
 ];
+
+if (!empty($page)) {
+    $params['page'] = $page;
+}
 
 $url = new moodle_url('/mod/eportfolio/view.php', $params);
 
@@ -85,14 +90,14 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                     'courseid' => $course->id,
             ];
 
-            $gradeurl = new moodle_url('/mod/eportfolio/grade.php', ['id' => $cm->id, 'eportid' => $eport->id]);
+            $gradeurl = new moodle_url('/mod/eportfolio/grade.php', ['id' => $cm->id, 'eportid' => $eport->id, 'page' => $page]);
 
-            $mform = new grade_form($gradeurl, $customdata);
+            $mform = new grade_form($gradeurl->out(false), $customdata);
             $mform->set_data($setdata);
 
             if ($formdata = $mform->is_cancelled()) {
                 // Add cancelled text.
-                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
+                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                         get_string('grade:cancelled', 'mod_eportfolio'),
                         null, \core\output\notification::NOTIFY_WARNING);
             } else if ($formdata = $mform->get_data()) {
@@ -167,13 +172,13 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                         $event->add_record_snapshot('eportfolio', $moduleinstance);
                         $event->trigger();
 
-                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
+                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                                 get_string('grade:update:success', 'mod_eportfolio'),
                                 null, \core\output\notification::NOTIFY_SUCCESS);
 
                     } else {
 
-                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
+                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                                 get_string('grade:update:error', 'mod_eportfolio'),
                                 null, \core\output\notification::NOTIFY_ERROR);
 
@@ -232,13 +237,13 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                         $event->add_record_snapshot('eportfolio', $moduleinstance);
                         $event->trigger();
 
-                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
+                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                                 get_string('grade:insert:success', 'mod_eportfolio'),
                                 null, \core\output\notification::NOTIFY_SUCCESS);
 
                     } else {
 
-                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id]),
+                        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                                 get_string('grade:insert:error', 'mod_eportfolio'),
                                 null, \core\output\notification::NOTIFY_ERROR);
 
@@ -269,7 +274,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
 
                     $data->userfullname = fullname($user);
                     $data->title = (!empty($eport->title)) ? $eport->title : mod_eportfolio_get_h5p_title($eport->fileidcontext);
-                    $data->backurl = $url;
+                    $data->backurl = $url->out(false);
                     $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
                     $data->timecreated = date('d.m.Y', $eport->timecreated);
                     $data->h5pplayer = \core_h5p\player::display($fileurl, $config, false, 'mod_eportfolio', false);
@@ -325,7 +330,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
 
                 $data->userfullname = fullname($user);
                 $data->title = (!empty($eport->title)) ? $eport->title : mod_eportfolio_get_h5p_title($eport->fileidcontext);
-                $data->backurl = $url;
+                $data->backurl = $url->out(false);
                 $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
                 $data->timecreated = date('d.m.Y', $eport->timecreated);
                 $data->h5pplayer = \core_h5p\player::display($fileurl, $config, false, 'mod_eportfolio', false);

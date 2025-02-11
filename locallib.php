@@ -63,9 +63,11 @@ function mod_eportfolio_check_current_eportfolio_course($courseid) {
  * @param string $url
  * @param string $tsort
  * @param int $tdir
+ * @param int $page
+ * @param int $perpage
  * @return void
  */
-function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null) {
+function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null, $page = null, $perpage = null) {
     global $DB, $USER, $OUTPUT;
 
     $coursemodulecontext = context_module::instance($cmid);
@@ -77,14 +79,18 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
         $actionsallowed = true;
 
-        $entry = mod_eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir);
+        $entry = mod_eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir, $page, $perpage);
 
     } else {
-        $entry = mod_eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir);
+        $entry = mod_eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir, $page, $perpage);
     }
 
     // View all ePortfolios shared for grading.
     if (!empty($entry)) {
+
+        $count = $DB->count_records('local_eportfolio_share', ['shareoption' => 'grade', 'courseid' => $courseid]);
+
+        echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
         // Create overview table.
         $table = new flexible_table('eportfolio:overview');
@@ -139,12 +145,13 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
             if ($actionsallowed) {
                 // Add grade button for teacher.
                 $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grade.php',
-                        ['id' => $cmid, 'eportid' => $ent->eportid]), get_string('overview:table:btn:grade', 'mod_eportfolio'),
+                        ['id' => $cmid, 'eportid' => $ent->eportid, 'page' => $page]),
+                        get_string('overview:table:btn:grade', 'mod_eportfolio'),
                         ['class' => 'btn btn-primary',
                                 'title' => get_string('overview:table:btn:grade', 'mod_eportfolio')]);
 
                 $deleteurl = new moodle_url('/mod/eportfolio/actions.php', ['id' => $cmid, 'eportid' => $ent->eportid,
-                        'action' => 'delete', 'sesskey' => sesskey()]);
+                        'action' => 'delete', 'sesskey' => sesskey(), 'page' => $page]);
 
                 $deletedata = new \stdClass();
                 $deletedata->deleteurl = $deleteurl->out(false);
@@ -154,7 +161,8 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
             } else {
                 // Add view button for students.
                 $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grade.php',
-                        ['id' => $cmid, 'eportid' => $ent->eportid]), get_string('overview:table:btn:view', 'mod_eportfolio'),
+                        ['id' => $cmid, 'eportid' => $ent->eportid, 'page' => $page]),
+                        get_string('overview:table:btn:view', 'mod_eportfolio'),
                         ['class' => 'btn btn-primary',
                                 'title' => get_string('overview:table:btn:view', 'mod_eportfolio')]);
             }
@@ -172,6 +180,8 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
         $table->finish_html();
 
+        echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
+
     } else {
         // No ePortfolios found.
         $data = new stdClass();
@@ -187,9 +197,11 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
  * @param int $userid
  * @param string $tsort
  * @param int $tdir
+ * @param int $page
+ * @param int $perpage
  * @return array
  */
-function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
+function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null, $page = null, $perpage = null) {
     global $DB;
 
     $sql = "SELECT es.id, es.title, es.fileidcontext, es.usermodified, es.courseid, es.timecreated,
@@ -230,6 +242,13 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
 
     if (!empty($sortorder)) {
         $sql .= $sortorder;
+    }
+
+    if (!empty($page)) {
+        $limitfrom = $page * $perpage;
+        $limitnum = $perpage;
+
+        $sql .= "LIMIT " . $limitfrom . ', ' . $limitnum;
     }
 
     $eportfoliosshare = $DB->get_records_sql($sql, $params);

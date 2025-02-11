@@ -29,6 +29,7 @@ $id = required_param('id', PARAM_INT);  // Course Module.
 $eportid = required_param('eportid', PARAM_INT);  // ID eport.
 $action = required_param('action', PARAM_ALPHA);
 $sesskey = required_param('sesskey', PARAM_ALPHANUM);
+$page = optional_param('page', 0, PARAM_INT);
 
 $cm = get_coursemodule_from_id('eportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
@@ -39,7 +40,7 @@ require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
 if (!has_capability('mod/eportfolio:grade_eport', $modulecontext)) {
-    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $id]),
+    redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $id, 'page' => $page]),
             get_string('error:missingcapability:actions', 'mod_eportfolio'),
             null, \core\output\notification::NOTIFY_ERROR);
 }
@@ -51,6 +52,7 @@ $urlparams = [
         'eportid' => $eportid,
         'sesskey' => $sesskey,
         'action' => $action,
+        'page' => $page,
 ];
 
 $url = new moodle_url('/mod/eportfolio/actions.php', $urlparams);
@@ -63,7 +65,7 @@ $PAGE->set_heading(get_string('actions:header', 'mod_eportfolio'));
 $PAGE->set_pagelayout('base');
 $PAGE->add_body_class('limitedwith');
 
-$redirecturl = new moodle_url('/mod/eportfolio/view.php', ['id' => $id]);
+$redirecturl = new moodle_url('/mod/eportfolio/view.php', ['id' => $id, 'page' => $page]);
 
 if ($action === 'delete') {
 
