@@ -102,7 +102,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
 
                 $data = new stdClass();
 
-                $data->eportid = $formdata->eportid;
+                $data->shareid = $formdata->eportid;
                 $data->instance = $instanceid->id;
                 $data->fileidcontext = $formdata->fileidcontext;
                 $data->courseid = $formdata->courseid;
@@ -129,7 +129,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                             $filename = $file->get_filename();
                         }
 
-                        $h5pfilename = eportfolio_get_h5p_title($data->fileidcontext);
+                        $h5pfilename = mod_eportfolio_get_h5p_title($data->fileidcontext);
 
                         if (!empty($eport->title)) {
                             $filename = $eport->title;
@@ -194,7 +194,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                             $filename = $file->get_filename();
                         }
 
-                        $h5pfilename = eportfolio_get_h5p_title($data->fileidcontext);
+                        $h5pfilename = mod_eportfolio_get_h5p_title($data->fileidcontext);
 
                         if (!empty($eport->title)) {
                             $filename = $eport->title;
@@ -268,7 +268,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                     $data = new stdClass();
 
                     $data->userfullname = fullname($user);
-                    $data->title = (!empty($eport->title)) ? $eport->title : eportfolio_get_h5p_title($eport->fileidcontext);
+                    $data->title = (!empty($eport->title)) ? $eport->title : mod_eportfolio_get_h5p_title($eport->fileidcontext);
                     $data->backurl = $url;
                     $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
                     $data->timecreated = date('d.m.Y', $eport->timecreated);
@@ -324,7 +324,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                 $data = new stdClass();
 
                 $data->userfullname = fullname($user);
-                $data->title = (!empty($eport->title)) ? $eport->title : eportfolio_get_h5p_title($eport->fileidcontext);
+                $data->title = (!empty($eport->title)) ? $eport->title : mod_eportfolio_get_h5p_title($eport->fileidcontext);
                 $data->backurl = $url;
                 $data->backurlstring = get_string('gradeform:backbtn', 'mod_eportfolio');
                 $data->timecreated = date('d.m.Y', $eport->timecreated);

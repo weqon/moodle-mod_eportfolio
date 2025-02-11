@@ -125,26 +125,15 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
         foreach ($entry as $ent) {
 
-            $params = [
-                    'courseid' => $courseid,
-                    'cmid' => $cmid,
-                    'fileidcontext' => $ent->fileidcontext,
-            ];
+            $grade = $ent->grade;
 
-            $getgrade = $DB->get_record('eportfolio_grade', $params);
-
-            $grade = './.';
-
-            if (!empty($getgrade)) {
-                $grade = $getgrade->grade . ' %';
-
-                // Add additional info icon for showing feedbacktext.
+            // Add additional info icon for showing feedbacktext.
+            if ($ent->feedbacktext != './') {
                 $gradefeedback =
                         html_writer::tag('i', '', ['class' => 'fa fa-info-circle ml-3', 'data-toggle' => 'tooltip',
-                                'data-placement' => 'bottom', 'title' => format_string($getgrade->feedbacktext)]);
+                                'data-placement' => 'bottom', 'title' => format_string($ent->feedbacktext)]);
 
                 $grade .= $gradefeedback;
-
             }
 
             if ($actionsallowed) {
@@ -203,18 +192,23 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null) {
     global $DB;
 
-    $sql = "SELECT * FROM {local_eportfolio_share} 
-            WHERE shareoption = :shareoption AND courseid = :courseid";
+    $sql = "SELECT es.id, es.title, es.fileidcontext, es.usermodified, es.courseid, es.timecreated,
+            eg.grade, eg.feedbacktext
+            FROM {local_eportfolio_share} es
+            LEFT JOIN {eportfolio_grade} eg
+            ON es.fileidcontext = eg.fileidcontext
+            WHERE es.shareoption = :esshareoption AND es.courseid = :escourseid
+            ";
 
     $params = [
-            'shareoption' => 'grade', // It's always grade at this point.
-            'courseid' => (int) $courseid,
+            'esshareoption' => 'grade', // It's always grade at this point.
+            'escourseid' => (int) $courseid,
     ];
 
     // If user ID is set, we assume the user is accessing the page.
     if (!empty($userid)) {
-        $sql .= " AND usermodified = :usermodified";
-        $params['usermodified'] = (int) $userid;
+        $sql .= " AND es.usermodified = :esusermodified";
+        $params['esusermodified'] = (int) $userid;
     }
 
     // If tsort and tdir is set.
@@ -255,8 +249,8 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
         $eport->userfullname = fullname($user);
         $eport->courseid = $es->courseid;
         $eport->timecreated = $es->timecreated;
-        #$eport->grade = (!empty($es->grade)) ? $es->grade : './';
-        #$eport->feedbacktext = (!empty($es->feedbacktext)) ? $es->feedbacktext : './';
+        $eport->grade = (!empty($es->grade)) ? $es->grade . '%' : './';
+        $eport->feedbacktext = (!empty($es->feedbacktext)) ? $es->feedbacktext : './';
 
         $sharedeportfolios[] = $eport;
     }
