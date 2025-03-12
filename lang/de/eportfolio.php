@@ -41,8 +41,6 @@ $string['error:noeportfolios:found'] = 'Aktuell liegen keine ePortfolios zur Bew
 $string['error:noeportfolio:file:found'] = 'Die aufgerufene Datei konnte nicht gefunden werden!';
 $string['error:missingcapability:actions'] =
         'Sie haben nicht die erforderlichen Berechtigungen, um die gewählte Aktion auszuführen!';
-$string['eportfolio:create:activityalreadyavailable'] =
-        'In dem Kurs ist bereits eine Instanz dieser Aktivität angelegt. Sie können keine weitere Instanz hinzufügen!';
 
 $string['actions:header'] = 'Aktion ausführen';
 

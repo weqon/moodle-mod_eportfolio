@@ -49,7 +49,7 @@ function eportfolio_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:
             return false;
         case FEATURE_BACKUP_MOODLE2:
-            return false;
+            return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case MOD_PURPOSE_ASSESSMENT:
@@ -73,18 +73,6 @@ function eportfolio_supports($feature) {
  */
 function eportfolio_add_instance($moduleinstance, $mform = null) {
     global $DB, $USER;
-
-    // Check, if already an instance for this course is available.
-    $exists = $DB->get_record('eportfolio', ['course' => $moduleinstance->course]);
-
-    if ($exists) {
-
-        // Currently only von activity per course is allowed!
-        $url = new moodle_url('/course/view.php', ['id' => $moduleinstance->course]);
-
-        redirect($url, get_string('eportfolio:create:activityalreadyavailable', 'mod_eportfolio'),
-                '', \core\output\notification::NOTIFY_ERROR);
-    }
 
     $moduleinstance->timecreated = time();
     $moduleinstance->usermodified = $USER->id;

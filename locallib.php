@@ -79,10 +79,10 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
         $actionsallowed = true;
 
-        $entry = mod_eportfolio_get_eportfolios($courseid, 0, $tsort, $tdir, $page, $perpage);
+        $entry = mod_eportfolio_get_eportfolios($courseid, $cmid, 0, $tsort, $tdir, $page, $perpage);
 
     } else {
-        $entry = mod_eportfolio_get_eportfolios($courseid, $USER->id, $tsort, $tdir, $page, $perpage);
+        $entry = mod_eportfolio_get_eportfolios($courseid, $cmid, $USER->id, $tsort, $tdir, $page, $perpage);
     }
 
     // View all ePortfolios shared for grading.
@@ -194,6 +194,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
  * Get ePortfolios for grading teacher.
  *
  * @param int $courseid
+ * @param int $cmid
  * @param int $userid
  * @param string $tsort
  * @param int $tdir
@@ -201,7 +202,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
  * @param int $perpage
  * @return array
  */
-function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null, $tdir = null, $page = null, $perpage = null) {
+function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort = null, $tdir = null, $page = null, $perpage = null) {
     global $DB;
 
     $sql = "SELECT es.id, es.title, es.fileidcontext, es.usermodified, es.courseid, es.timecreated,
@@ -209,12 +210,13 @@ function mod_eportfolio_get_eportfolios($courseid, $userid = null, $tsort = null
             FROM {local_eportfolio_share} es
             LEFT JOIN {eportfolio_grade} eg
             ON es.fileidcontext = eg.fileidcontext
-            WHERE es.shareoption = :esshareoption AND es.courseid = :escourseid
+            WHERE es.shareoption = :esshareoption AND es.courseid = :escourseid AND es.cmid = :escmid
             ";
 
     $params = [
             'esshareoption' => 'grade', // It's always grade at this point.
             'escourseid' => (int) $courseid,
+            'escmid' => (int) $cmid,
     ];
 
     // If user ID is set, we assume the user is accessing the page.

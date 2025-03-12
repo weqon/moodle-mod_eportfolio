@@ -41,8 +41,6 @@ $string['error:noeportfolios:found'] = 'There are currently no ePortfolios avail
 $string['error:noeportfolio:file:found'] = 'The requested file could not be found!';
 $string['error:missingcapability:actions'] =
         'You do not have the required capabilities to perform the selected action!';
-$string['eportfolio:create:activityalreadyavailable'] =
-        'An instance of this activity has already been created in the course. You cannot add another instance!';
 
 $string['actions:header'] = 'Perform action';
 

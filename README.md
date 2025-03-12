@@ -27,6 +27,12 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
+**Version 0.2.3**
+
+- Removed check for existing activity
+  - There can now be more than one activity per course
+- The activity can now be saved, restored and duplicated.
+
 **Version 0.2.2**
 
 - Fixed naming collisions
