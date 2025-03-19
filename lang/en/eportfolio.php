@@ -31,6 +31,9 @@ $string['modulenameplural'] = 'ePortfolio Grading';
 $string['pluginadministration'] = 'ePortfolio Grading administration';
 $string['eportfolioname'] = 'Title'; // Mod form.
 
+// Index page.
+$string['noeportfolioinstances'] = 'No ePortfolio activities have been created in this course yet!'; // Mod form.
+
 // Capabilities - db/access - permissions.
 $string['eportfolio:addinstance'] = 'Add new ePortfolio Grading';
 $string['eportfolio:grade_eport'] = 'Grade ePortfolio';

@@ -51,7 +51,7 @@ echo $OUTPUT->heading($modulenameplural);
 $eportfolios = get_all_instances_in_course('eportfolio', $course);
 
 if (empty($eportfolios)) {
-    notice(get_string('no$eportfolioinstances', 'mod_eportfolio'), new moodle_url('/course/view.php', ['id' => $course->id]));
+    notice(get_string('noeportfolioinstances', 'mod_eportfolio'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
 $table = new html_table();

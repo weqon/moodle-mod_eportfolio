@@ -54,8 +54,8 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-
 $modulecontext = context_module::instance($cm->id);
+require_capability('mod/eportfolio:view', $modulecontext);
 
 $params = [
         'id' => $cm->id,
