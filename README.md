@@ -27,6 +27,10 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
+**Version 0.2.5**
+
+- Bug fix date output for graded ePortfolio
+
 **Version 0.2.4**
 
 - Fixed incorrect language string key in index.php
