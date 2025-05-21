@@ -354,7 +354,8 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
                         $data->grade = $getgrade->grade . ' %';
                         $data->gradetext = format_text($getgrade->feedbacktext);
                         $data->grader = fullname($grader);
-                        $data->dategraded = date('d.m.Y - H:i', $getgrade->timemodified);
+                        $data->dategraded = (!empty($getgrade->timemodified)) ? date('d.m.Y - H:i', $getgrade->timemodified) :
+                                date('d.m.Y - H:i', $getgrade->timecreated);
                     }
                 }
 
