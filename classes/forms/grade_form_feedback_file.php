@@ -17,7 +17,7 @@
 /**
  *
  * @package     mod_eportfolio
- * @copyright   2024 weQon UG {@link https://weqon.net}
+ * @copyright   2025 weQon UG {@link https://weqon.net}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ require_once($CFG->dirroot . "/mod/eportfolio/locallib.php");
 /**
  * Viewing the grade form.
  */
-class grade_form extends moodleform {
+class grade_form_feedback_file extends moodleform {
 
     /**
      * Building the form.
@@ -37,9 +37,10 @@ class grade_form extends moodleform {
      * @return void
      */
     public function definition() {
-        global $DB;
 
         $mform = $this->_form; // Don't forget the underscore!
+
+        $customdata = $this->_customdata;
 
         $mform->addElement('hidden', 'eportid', $this->_customdata['eportid']);
         $mform->setType('eportid', PARAM_INT);
@@ -58,8 +59,9 @@ class grade_form extends moodleform {
         $mform->setType('grade', PARAM_INT);
         $mform->addHelpButton('grade', 'gradeform:grade', 'mod_eportfolio');
 
-        $mform->addElement('textarea', 'feedbacktext', get_string('gradeform:feedbacktext', 'mod_eportfolio'),
-                'wrap="virtual" rows="10" cols="30"');
+        $mform->addElement('filemanager', 'feedbackfile', get_string('gradeform:feedback:file', 'mod_eportfolio'), null,
+                $customdata['filemanageropts']);
+        $mform->setDefault('feedbackfile', $customdata['feedbackfile']);
 
         $mform->addElement('html', '<hr><hr>');
 

@@ -67,7 +67,13 @@
                     <b>{{#str}}gradeform:timegraded, mod_eportfolio{{/str}}:</b> {{{dategraded}}}
                 <hr>
                 <b>{{#str}}gradeform:gradeview, mod_eportfolio{{/str}}:</b> {{{grade}}}<br>
-                <b>{{#str}}gradeform:feedbacktext, mod_eportfolio{{/str}}:</b><br>{{{gradetext}}}
+                {{#gradetext}}
+                    <b>{{#str}}gradeform:feedbacktext, mod_eportfolio{{/str}}:</b><br>{{{gradetext}}}
+                {{/gradetext}}
+                {{#gradefile}}
+                    <b>{{#str}}gradeform:feedbackfile, mod_eportfolio{{/str}}: </b>
+                    <a href="{{gradefile}}" title="{{gradefilename}}">{{gradefilename}}</a>
+                {{/gradefile}}
                 </p>
             </div>
         </div>

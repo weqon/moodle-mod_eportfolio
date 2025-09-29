@@ -181,6 +181,29 @@ function xmldb_eportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025020700, 'eportfolio');
     }
 
+    if ($oldversion < 2025052300) {
+
+        // Define field feedbacktype to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('feedbacktype', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'introformat');
+
+        // Conditionally launch add field feedbacktype.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field feedbackfileid to be added to eportfolio_grade.
+        $table = new xmldb_table('eportfolio_grade');
+        $field = new xmldb_field('feedbackfileid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'feedbacktext');
+
+        // Conditionally launch add field feedbackfileid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025052300, 'eportfolio');
+    }
 
     return true;
 }

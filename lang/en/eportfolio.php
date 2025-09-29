@@ -29,7 +29,16 @@ $string['pluginname'] = 'ePortfolio Grading';
 $string['modulename'] = 'ePortfolio Grading';
 $string['modulenameplural'] = 'ePortfolio Grading';
 $string['pluginadministration'] = 'ePortfolio Grading administration';
-$string['eportfolioname'] = 'Title'; // Mod form.
+
+// Mod form.
+$string['eportfolioname'] = 'Title';
+$string['eportfolio:feedback:header'] = 'Settings for ePortfolio grading';
+$string['eportfolio:feedback:label'] = 'Select feedback type';
+$string['eportfolio:feedback:text'] = 'Feedback comments';
+$string['eportfolio:feedback:file'] = 'File feedback';
+$string['eportfolio:feedback:label_help'] = 'Available types:<br>
+<b>Feedback comments:</b> A text field for entering feedback in text form is displayed in the rating overview.<br><br>
+<b>File feedback:</b> An input field for uploading a feedback file is displayed in the rating overview.';
 
 // Index page.
 $string['noeportfolioinstances'] = 'No ePortfolio activities have been created in this course yet!'; // Mod form.
@@ -65,6 +74,7 @@ $string['gradeform:header'] = 'Grade & Feedback';
 $string['gradeform:grade'] = 'Grade (in %)';
 $string['gradeform:grade_help'] = 'Specify grading as a percentage.';
 $string['gradeform:feedbacktext'] = 'Feedback as comment';
+$string['gradeform:feedbackfile'] = 'Feedback as file';
 $string['gradeform:gradeview'] = 'Grade';
 $string['gradeform:grader'] = 'Grading by';
 $string['gradeform:timegraded'] = 'Graded on';

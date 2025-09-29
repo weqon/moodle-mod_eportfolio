@@ -29,10 +29,19 @@ $string['pluginname'] = 'ePortfolio Bewertung';
 $string['modulename'] = 'ePortfolio Bewertung';
 $string['modulenameplural'] = 'ePortfolio Bewertung';
 $string['pluginadministration'] = 'ePortfolio Bewertung Administration';
-$string['eportfolioname'] = 'Titel'; // Mod form.
+
+// Mod form.
+$string['eportfolioname'] = 'Titel';
+$string['eportfolio:feedback:header'] = 'Einstellungen ePortfolio Bewertung';
+$string['eportfolio:feedback:label'] = 'Feedback Typ auswählen';
+$string['eportfolio:feedback:text'] = 'Feedback als Kommentar';
+$string['eportfolio:feedback:file'] = 'Feedback als Datei';
+$string['eportfolio:feedback:label_help'] = 'Verfügbare Typen:<br>
+<b>Feedback als Kommentar:</b> In der Bewertungsübersicht wird ein Textfeld zur Eingabe eines Feedbacks in Textform eingeblendet.<br><br>
+<b>Feedback als Datei:</b> In der Bewertungsübersicht wird ein Eingabefeld zum Hochladen einer Feedback-Datei eingeblendet.';
 
 // Index page.
-$string['noeportfolioinstances'] = 'In diesem Kurs wurden noch keine ePortfolio Aktivitäten angelegt!'; // Mod form.
+$string['noeportfolioinstances'] = 'In diesem Kurs wurden noch keine ePortfolio Aktivitäten angelegt!';
 
 // Capabilities - db/access - permissions.
 $string['eportfolio:addinstance'] = 'Neues ePortfolio Bewertung hinzufügen';
@@ -65,6 +74,7 @@ $string['gradeform:header'] = 'Benotung & Feedback';
 $string['gradeform:grade'] = 'Benotung (in %)';
 $string['gradeform:grade_help'] = 'Benotung in Prozent angeben.';
 $string['gradeform:feedbacktext'] = 'Feedback als Kommentar';
+$string['gradeform:feedbackfile'] = 'Feedback als Datei';
 $string['gradeform:gradeview'] = 'Benotung';
 $string['gradeform:grader'] = 'Bewertet durch';
 $string['gradeform:timegraded'] = 'Bewertet am';

@@ -65,6 +65,21 @@ class mod_eportfolio_mod_form extends moodleform_mod {
             $this->add_intro_editor();
         }
 
+        // Adding the "general" fieldset, where all the common settings are shown.
+        $mform->addElement('header', 'feedback', get_string('eportfolio:feedback:header', 'mod_eportfolio'));
+
+        // Select for available feedback types.
+        $selectvalues = [
+                '0' => get_string('eportfolio:feedback:text', 'mod_eportfolio'),
+                '1' => get_string('eportfolio:feedback:file', 'mod_eportfolio'),
+        ];
+
+        $mform->addElement('select', 'feedbacktype', get_string('eportfolio:feedback:label', 'mod_eportfolio'),
+                $selectvalues);
+
+        $mform->addHelpButton('feedbacktype', 'eportfolio:feedback:label', 'mod_eportfolio');
+        $mform->setType('feedbacktype', PARAM_INT);
+
         // Add standard grading elements.
         $this->standard_grading_coursemodule_elements();
 
