@@ -27,7 +27,13 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
-### Moodle 4.5 - pre release ###
+### Moodle 4.5 ###
+
+**Version 0.3.1**
+
+- Set maturity to stable
+- Added new feature feedback file upload.
+  - The feedback type can be selected in the activity settings
 
 **Version 0.3.0**
 

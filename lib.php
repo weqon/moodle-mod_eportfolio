@@ -176,3 +176,34 @@ function eportfolio_delete_instance($id) {
 
     return $result;
 }
+
+/**
+ * Serves the files.
+ *
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - justsend the file
+ * @package  local_adleteh5ppool
+ * @category files
+ */
+function eportfolio_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+
+    $relativepath = implode('/', $args);
+    $fullpath = '/' . $context->id . '/mod_eportfolio/' . $filearea . '/' . $relativepath;
+
+    $fs = get_file_storage();
+    $file = $fs->get_file_by_hash(sha1($fullpath));
+
+    if (!$file || $file->is_directory()) {
+        return false;
+    }
+
+    send_stored_file($file, null, 0, true); // Download MUST be forced - security!
+
+    return;
+}

@@ -185,6 +185,16 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
     } else {
         // No ePortfolios found.
         $data = new stdClass();
+        
+        if ($actionsallowed) {
+            $data->nofilefoundteacher = true;
+        } else {
+            $data->nofilefoundstudent = true;
+
+            $eporturl = new moodle_url('/local/eportfolio/index.php');
+            $data->eporturl = $eporturl->out(false);
+        }
+        
         echo $OUTPUT->render_from_template('mod_eportfolio/noeportfolios_found', $data);
     }
 

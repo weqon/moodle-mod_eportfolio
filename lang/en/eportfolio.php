@@ -50,6 +50,9 @@ $string['eportfolio:view'] = 'View ePortfolio';
 
 $string['error:noeportfoliocourse'] = 'This course has not been marked as an ePortfolio course!';
 $string['error:noeportfolios:found'] = 'There are currently no ePortfolios available for grading!';
+$string['error:noeportfolios:found:student'] = 'You have not yet submitted an ePortfolio for grading!
+Open your ePortfolio and select one for grading.';
+$string['error:noeportfolios:found:student:link'] = 'View my ePortfolio';
 $string['error:noeportfolio:file:found'] = 'The requested file could not be found!';
 $string['error:missingcapability:actions'] =
         'You do not have the required capabilities to perform the selected action!';

@@ -37,7 +37,15 @@
     <div class="col-lg-6 col-sm-6">
         <p class="alert alert-info">
             {{#pix}} docs{{/pix}}
-            {{#str}} error:noeportfolios:found, mod_eportfolio {{/str}}
+            {{#nofilefoundteacher}}
+                {{#str}} error:noeportfolios:found, mod_eportfolio {{/str}}
+            {{/nofilefoundteacher}}
+            {{#nofilefoundstudent}}
+                {{#str}} error:noeportfolios:found:student, mod_eportfolio {{/str}}<br>
+                <a href="{{eporturl}}" title="{{#str}} error:noeportfolios:found:student:link, mod_eportfolio {{/str}}">
+                    {{#str}} error:noeportfolios:found:student:link, mod_eportfolio {{/str}}
+                </a>
+            {{/nofilefoundstudent}}
         </p>
     </div>
 </div>

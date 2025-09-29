@@ -50,6 +50,9 @@ $string['eportfolio:view'] = 'ePortfolio anzeigen';
 
 $string['error:noeportfoliocourse'] = 'Dieser Kurs wurde nicht als ePortfolio Kurs markiert!';
 $string['error:noeportfolios:found'] = 'Aktuell liegen keine ePortfolios zur Bewertung vor!';
+$string['error:noeportfolios:found:student'] = 'Sie haben bisher noch kein ePortfolio zur Bewertung eingereicht!
+Öffnen Sie Ihr ePortfolio und reichen Sie eine Datei zur Bewertung ein.';
+$string['error:noeportfolios:found:student:link'] = 'Mein ePortfolio anzeigen';
 $string['error:noeportfolio:file:found'] = 'Die aufgerufene Datei konnte nicht gefunden werden!';
 $string['error:missingcapability:actions'] =
         'Sie haben nicht die erforderlichen Berechtigungen, um die gewählte Aktion auszuführen!';
