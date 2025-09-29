@@ -105,10 +105,26 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
         $actionhelp = '';
 
         if ($actionsallowed) {
-            $actionhelp = html_writer::tag('button', '', ['class' => 'btn btn-link fa fa-question-circle ml-1',
-                    'data-toggle' => 'popover', 'data-container' => 'body', 'data-placement' => 'bottom',
+            $icon = html_writer::tag('i', '', [
+                    'class' => 'icon fa-solid fa-circle-question text-info fa-fw',
                     'title' => get_string('overview:table:btn:delete', 'mod_eportfolio'),
-                    'data-content' => get_string('overview:table:btn:delete:help', 'mod_eportfolio')]);
+                    'role' => 'img',
+                    'aria-label' => get_string('overview:table:btn:delete', 'mod_eportfolio')
+            ]);
+
+            $actionhelp = html_writer::tag('a', $icon, [
+                    'class' => 'btn btn-link p-0 ms-1',
+                    'role' => 'button',
+                    'data-bs-toggle' => 'popover',
+                    'data-bs-container' => 'body',
+                    'data-bs-placement' => 'bottom',
+                    'title' => get_string('overview:table:btn:delete', 'mod_eportfolio'),
+                    'data-bs-content' => get_string('overview:table:btn:delete:help', 'mod_eportfolio'),
+                    'data-bs-html' => 'true',
+                    'tabindex' => '0',
+                    'data-bs-trigger' => 'focus',
+                    'aria-label' => get_string('overview:table:btn:delete', 'mod_eportfolio')
+            ]);
         }
 
         $table->define_headers([
@@ -136,8 +152,8 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
             // Add additional info icon for showing feedbacktext.
             if ($ent->feedbacktext != './') {
                 $gradefeedback =
-                        html_writer::tag('i', '', ['class' => 'fa fa-info-circle ml-3', 'data-toggle' => 'tooltip',
-                                'data-placement' => 'bottom', 'title' => format_string($ent->feedbacktext)]);
+                        html_writer::tag('i', '', ['class' => 'fa fa-info-circle ml-3', 'data-bs-toggle' => 'tooltip',
+                                'data-bs-placement' => 'bottom', 'title' => format_string($ent->feedbacktext)]);
 
                 $grade .= $gradefeedback;
             }

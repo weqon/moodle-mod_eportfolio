@@ -27,6 +27,12 @@ to complete the installation from the command line.
 
 ## Relase notes ##
 
+### Moodle 5.0 ###
+
+**Version 0.3.2**
+
+- Set supported Moodle version to 5.0
+
 ### Moodle 4.5 ###
 
 **Version 0.3.1**
