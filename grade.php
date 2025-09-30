@@ -83,7 +83,7 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
     $gradeexists = $DB->get_record('eportfolio_grade',
             ['userid' => $eport->usermodified, 'fileidcontext' => $eport->fileidcontext, 'cmid' => $cm->id]);
 
-    $setdata = '';
+    $setdata = [];
 
     if (!empty($gradeexists)) {
         if ($moduleinstance->feedbacktype == 0) {

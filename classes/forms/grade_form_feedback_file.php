@@ -59,7 +59,7 @@ class grade_form_feedback_file extends moodleform {
         $mform->setType('grade', PARAM_INT);
         $mform->addHelpButton('grade', 'gradeform:grade', 'mod_eportfolio');
 
-        $mform->addElement('filemanager', 'feedbackfile', get_string('gradeform:feedback:file', 'mod_eportfolio'), null,
+        $mform->addElement('filemanager', 'feedbackfile', get_string('gradeform:feedbackfile', 'mod_eportfolio'), null,
                 $customdata['filemanageropts']);
         $mform->setDefault('feedbackfile', $customdata['feedbackfile']);
 
