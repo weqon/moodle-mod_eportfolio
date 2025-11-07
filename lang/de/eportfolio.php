@@ -123,6 +123,12 @@ $string['event:eportfolio:updatedgrade:name'] = 'ePortfolio Bewertung aktualisie
 $string['event:eportfolio:updatedgrade'] =
         'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
 
+// Settings.
+$string['settings:general'] = 'Einstellungen';
+$string['settings:maxuploadfilezise'] = 'Maximale Dateigröße';
+$string['settings:maxuploadfilezise:desc'] =
+        'Diese Einstellung legt fest, welche maximale Dateigröße für das Hochladen von Feedback-Dateien erlaubt ist.';
+
 // Privacy provider.
 $string['privacy:metadata:mod_eportfolio'] = 'Vom ePortfolio-Plugin freigegebene Daten';
 $string['privacy:metadata:mod_eportfolio:usermodified'] = 'Nutzer:innen ID, die die ePortfolio Aktivität angelegt/bearbeitet hat';

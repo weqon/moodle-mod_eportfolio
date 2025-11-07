@@ -53,6 +53,15 @@ if (!empty($page)) {
 
 $url = new moodle_url('/mod/eportfolio/view.php', $params);
 
+$config = get_config('mod_eportfolio');
+
+if (isset($config->maxbytes)) {
+    $filemaxbytes = $config->maxbytes;
+} else {
+    $filemaxbytes = $CFG->maxbytes;
+}
+
+
 $PAGE->set_url($url);
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -107,11 +116,11 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         // ToDo: Make this configurable.
         $filemanageropts = [
                 'subdirs' => 0,
-                'maxbytes' => 26214400,
-                'areamaxbytes' => 26214400,
+                'maxbytes' => $filemaxbytes,
+                'areamaxbytes' => $filemaxbytes,
                 'maxfiles' => 1,
                 'context' => $modulecontext,
-                'accepted_types' => ['.pdf', '.doc', '.docx', '.odt'],
+                'accepted_types' => ['*'],
         ];
 
         $draftid = file_get_submitted_draft_itemid('feedbackfile');
