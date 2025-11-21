@@ -40,8 +40,30 @@ $string['eportfolio:feedback:label_help'] = 'Verfügbare Typen:<br>
 <b>Feedback als Kommentar:</b> In der Bewertungsübersicht wird ein Textfeld zur Eingabe eines Feedbacks in Textform eingeblendet.<br><br>
 <b>Feedback als Datei:</b> In der Bewertungsübersicht wird ein Eingabefeld zum Hochladen einer Feedback-Datei eingeblendet.';
 
+$string['eportfolio:availability'] = 'Verfügbarkeit';
+$string['eportfolio:allowsubmission:fromdate'] = 'Abgabebeginn';
+$string['eportfolio:allowsubmission:fromdate_help'] =
+        'Wenn diese Option aktiviert ist, können ePortfolios nicht vor diesem Zeitpunkt eingereicht werden.
+        Wenn diese Option deaktiviert ist, ist die Einreichung sofort möglich.';
+$string['eportfolio:submissionduedate'] = 'Fälligkeitsdatum';
+$string['eportfolio:submissionduedate_help'] =
+        'Zum Fälligkeitsdatum wird die Abgabe des ePortfolios fällig. Eine Einreichung danach ist nicht mehr möglich.';
+$string['eportfolio:gradingduedate'] = 'An Bewertung erinnern';
+$string['eportfolio:gradingduedate_help'] =
+        'Dieser voraussichtliche Termin markiert den Abschluss der Einreichung. Dieses Datum wird verwendet, um Benachrichtigungen an Trainer/innen zu verschicken.';
+$string['eportfolio:alwaysshowdescription'] = 'Beschreibung immer anzeigen';
+$string['eportfolio:alwaysshowdescription_help'] =
+        'Wenn diese Option deaktiviert ist, wird die Beschreibung für Teilnehmer/innen nur ab dem Abgabebeginn angezeigt.';
+$string['eportfolio:duedateaftersubmission:validation'] = 'Das Fälligkeitsdatum muss nach dem Abgabebeginn liegen.';
+$string['eportfolio:gradingduefromdate:validation'] =
+        'An die Bewertung erinnern kann nicht vor dem Datum für Abgabebeginn liegen.';
+$string['eportfolio:gradingdueduedate:validation'] = 'An die Bewertung erinnern kann nicht vor dem Fälligkeitsdatum liegen.';
+
 // Index page.
 $string['noeportfolioinstances'] = 'In diesem Kurs wurden noch keine ePortfolio Aktivitäten angelegt!';
+$string['activitydate:submissionsdue'] = 'Fällig:';
+$string['activitydate:submissionsopen'] = 'Öffnet:';
+$string['activitydate:submissionsopened'] = 'Geöffnet:';
 
 // Capabilities - db/access - permissions.
 $string['eportfolio:addinstance'] = 'Neues ePortfolio Bewertung hinzufügen';
@@ -82,6 +104,7 @@ $string['gradeform:gradeview'] = 'Benotung';
 $string['gradeform:grader'] = 'Bewertet durch';
 $string['gradeform:timegraded'] = 'Bewertet am';
 $string['gradeform:backbtn'] = 'Zurück zur Übersicht';
+$string['gradeform:savegrade'] = 'Bewertung abgeben';
 
 // Insert & Update grading.
 $string['grade:insert:success'] = 'Ihre Bewertung wurde erfolgreich gespeichert!';
@@ -100,6 +123,30 @@ $string['message:smallmessage'] =
 <br>Bewertet durch: {$a->userfrom}<br>URL zur Einreichung:  <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:subject'] = 'Mitteilung über eine neue Bewertung für Ihr ePortfolio';
 $string['message:contexturlname'] = 'Bewertung für ePortfolio anzeigen';
+$string['message:allowsubmission:message'] =
+        '<p>Sie können jetzt Ihr ePortfolio im Kurs {$a->coursename} in der Aktivität {$a->name} einreichen.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:allowsubmission:smallmessage'] =
+        '<p>Sie können jetzt Ihr ePortfolio im Kurs {$a->coursename} in der Aktivität {$a->name} einreichen.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:allowsubmission:subject'] = 'Einreichungen für die Aktivität ePortfolio Bewertung';
+$string['message:allowsubmission:contexturlname'] = 'Aktivität ePortfolio Bewertung anzeigen';
+$string['message:submissionduedate:message'] =
+        '<p>Die Einreichung für die Aktivität {$a->name} im Kurs {$a->coursename} ist bald fällig. Bitte reichen Sie Ihr ePortfolio bis zum {$a->duedate} ein.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:submissionduedate:smallmessage'] =
+        '<p>Die Einreichung für die Aktivität {$a->name} im Kurs {$a->coursename} ist bald fällig. Bitte reichen Sie Ihr ePortfolio bis zum {$a->duedate} ein.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:submissionduedate:subject'] = 'Die Einreichung für die Aktivität ePortfolio Bewertung ist bald fällig';
+$string['message:submissionduedate:contexturlname'] = 'Aktivität ePortfolio Bewertung anzeigen';
+$string['message:gradingduedate:message'] =
+        '<p>Bitte bewerten Sie die eingereichten ePortfolios in der Aktivität {$a->name} im Kurs {$a->coursename}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:gradingduedate:smallmessage'] =
+        '<p>Bitte bewerten Sie die eingereichten ePortfolios in der Aktivität {$a->name} im Kurs {$a->coursename}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:gradingduedate:subject'] = 'Erinnerung zur Bewertung in der Aktivität ePortfolio Bewertung';
+$string['message:gradingduedate:contexturlname'] = 'Aktivität ePortfolio Bewertung anzeigen';
 
 // Delete shared ePortfolio.
 $string['delete:header'] = 'Neue Freigabe erlauben?';
@@ -122,6 +169,11 @@ $string['event:eportfolio:newgrading'] =
 $string['event:eportfolio:updatedgrade:name'] = 'ePortfolio Bewertung aktualisiert';
 $string['event:eportfolio:updatedgrade'] =
         'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+
+// Tasks.
+$string['task:messages:allowsubmission'] = 'Mitteilung an Teilnehmer:innen, dass die Einreichung begonnen hat';
+$string['task:messages:gradingduedate'] = 'Mitteilung an Trainer:innen über anstehende Bewertungen';
+$string['task:messages:submissionduedate'] = 'Mitteilung an Teilnehmer:innen über anstehende Einreichefrist';
 
 // Settings.
 $string['settings:general'] = 'Einstellungen';

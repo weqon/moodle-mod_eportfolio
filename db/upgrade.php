@@ -205,5 +205,101 @@ function xmldb_eportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025052300, 'eportfolio');
     }
 
+    if ($oldversion < 2025110500) {
+
+        // Define field allowsubmission to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('allowsubmission', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'feedbacktype');
+
+        // Conditionally launch add field allowsubmission.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field allowsubmission_send to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
+
+        // Conditionally launch add field allowsubmission_send.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field gradingduedate to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('gradingduedate', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'allowsubmission_send');
+
+        // Conditionally launch add field gradingduedate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field gradingduedate_send to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('gradingduedate_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'gradingduedate');
+
+        // Conditionally launch add field gradingduedate_send.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field submissionduedate to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('submissionduedate', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'gradingduedate_send');
+
+        // Conditionally launch add field submissionduedate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field submissionduedate_send to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('submissionduedate_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'submissionduedate');
+
+        // Conditionally launch add field submissionduedate_send.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025110500, 'eportfolio');
+    }
+
+    if ($oldversion < 2025110502) {
+
+        // Define field alwaysshowdescription to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'submissionduedate_send');
+
+        // Conditionally launch add field alwaysshowdescription.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+        }
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025110502, 'eportfolio');
+    }
+
+    if ($oldversion < 2025110503) {
+
+        // Rename field allowsubmission on table eportfolio to allowsubmissionsfromdate.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('allowsubmission', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'feedbacktype');
+
+        // Launch rename field allowsubmissionsfromdate.
+        $dbman->rename_field($table, $field, 'allowsubmissionsfromdate');
+
+        // Rename field allowsubmission_send on table eportfolio to allowsubmissionsfromdate_send.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
+
+        // Launch rename field allowsubmissionsfromdate_send.
+        $dbman->rename_field($table, $field, 'allowsubmissionsfromdate_send');
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025110503, 'eportfolio');
+    }
+
     return true;
 }

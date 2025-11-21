@@ -80,6 +80,27 @@ class mod_eportfolio_mod_form extends moodleform_mod {
         $mform->addHelpButton('feedbacktype', 'eportfolio:feedback:label', 'mod_eportfolio');
         $mform->setType('feedbacktype', PARAM_INT);
 
+        $mform->addElement('header', 'availability', get_string('eportfolio:availability', 'mod_eportfolio'));
+        $mform->setExpanded('availability', true);
+
+        $name = get_string('eportfolio:allowsubmission:fromdate', 'mod_eportfolio');
+        $options = ['optional' => true];
+        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
+        $mform->addHelpButton('allowsubmissionsfromdate', 'eportfolio:allowsubmission:fromdate', 'mod_eportfolio');
+
+        $name = get_string('eportfolio:submissionduedate', 'mod_eportfolio');
+        $mform->addElement('date_time_selector', 'submissionduedate', $name, ['optional' => true]);
+        $mform->addHelpButton('submissionduedate', 'eportfolio:submissionduedate', 'mod_eportfolio');
+
+        $name = get_string('eportfolio:gradingduedate', 'mod_eportfolio');
+        $mform->addElement('date_time_selector', 'gradingduedate', $name, ['optional' => true]);
+        $mform->addHelpButton('gradingduedate', 'eportfolio:gradingduedate', 'mod_eportfolio');
+
+        $name = get_string('eportfolio:alwaysshowdescription', 'mod_eportfolio');
+        $mform->addElement('checkbox', 'alwaysshowdescription', $name);
+        $mform->addHelpButton('alwaysshowdescription', 'eportfolio:alwaysshowdescription', 'mod_eportfolio');
+        $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
+
         // Add standard grading elements.
         $this->standard_grading_coursemodule_elements();
 
@@ -88,5 +109,31 @@ class mod_eportfolio_mod_form extends moodleform_mod {
 
         // Add standard buttons.
         $this->add_action_buttons();
+    }
+
+    /**
+     * Perform minimal validation on the settings form
+     *
+     * @param array $data
+     * @param array $files
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        if (!empty($data['allowsubmissionsfromdate']) && !empty($data['submissionduedate'])) {
+            if ($data['submissionduedate'] <= $data['allowsubmissionsfromdate']) {
+                $errors['submissionduedate'] = get_string('eportfolio:duedateaftersubmission:validation', 'mod_eportfolio');
+            }
+        }
+        if ($data['gradingduedate']) {
+            if ($data['allowsubmissionsfromdate'] && $data['allowsubmissionsfromdate'] > $data['gradingduedate']) {
+                $errors['gradingduedate'] = get_string('eportfolio:gradingduefromdate:validation', 'mod_eportfolio');
+            }
+            if ($data['submissionduedate'] && $data['submissionduedate'] > $data['gradingduedate']) {
+                $errors['gradingduedate'] = get_string('eportfolio:gradingdueduedate:validation', 'mod_eportfolio');
+            }
+        }
+
+        return $errors;
     }
 }

@@ -65,9 +65,10 @@ class grade_form_feedback_file extends moodleform {
 
         $mform->addElement('html', '<hr><hr>');
 
-        // Add standard buttons.
-        $this->add_action_buttons();
-
+        $buttonarray = [];
+        $buttonarray[] = $mform->createElement('submit', 'save', get_string('gradeform:savegrade', 'mod_eportfolio'));
+        $buttonarray[] = $mform->createElement('cancel');
+        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
     }
 
 }
