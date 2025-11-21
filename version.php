@@ -26,8 +26,13 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_eportfolio';
 $plugin->release = '0.3.2';
+<<<<<<< HEAD
 $plugin->version = 2025092901;
 $plugin->requires = 2025041400; // Moodle 5.0 Stable.
+=======
+$plugin->version = 2025110503;
+$plugin->requires = 2022112800; // Moodle 4.1 Stable.
+>>>>>>> fb742a8 (added start and due date incl. sending messages)
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
         'local_eportfolio' => ANY_VERSION,

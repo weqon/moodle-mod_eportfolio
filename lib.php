@@ -99,6 +99,10 @@ function eportfolio_update_instance($moduleinstance, $mform = null) {
     $moduleinstance->usermodified = $USER->id;
     $moduleinstance->id = $moduleinstance->instance;
 
+    if (!isset($moduleinstance->alwaysshowdescription)) {
+        $moduleinstance->alwaysshowdescription = 0;
+    }
+
     return $DB->update_record('eportfolio', $moduleinstance);
 }
 
@@ -206,4 +210,46 @@ function eportfolio_pluginfile($course, $cm, $context, $filearea, $args, $forced
     send_stored_file($file, null, 0, true); // Download MUST be forced - security!
 
     return;
+}
+
+/**
+ * Add a get_coursemodule_info function in case any ePortfolio type wants to add 'extra' information
+ * for the course.
+ *
+ * Given a course_module object, this function returns any "extra" information that may be needed
+ * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
+ *
+ * @param stdClass $coursemodule The coursemodule object (record).
+ * @return cached_cm_info An object on information that the courses
+ *                        will know about (most noticeably, an icon).
+ */
+function eportfolio_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    $dbparams = ['id' => $coursemodule->instance];
+    $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat, submissionduedate,
+       alwaysshowdescription';
+    if (!$eportfolio = $DB->get_record('eportfolio', $dbparams, $fields)) {
+        return false;
+    }
+
+    $result = new cached_cm_info();
+
+    $result->name = $eportfolio->name;
+    if ($coursemodule->showdescription) {
+        if ($eportfolio->alwaysshowdescription || time() > $eportfolio->allowsubmissionsfromdate) {
+            // Convert intro to html. Do not filter cached version, filters run at display time.
+            $result->content = format_module_intro('eportfolio', $eportfolio, $coursemodule->id, false);
+        }
+    }
+
+    // Populate some other values that can be used in calendar or on dashboard.
+    if ($eportfolio->allowsubmissionsfromdate) {
+        $result->customdata['allowsubmissionsfromdate'] = $eportfolio->allowsubmissionsfromdate;
+    }
+    if ($eportfolio->submissionduedate) {
+        $result->customdata['submissionduedate'] = $eportfolio->submissionduedate;
+    }
+
+    return $result;
 }
