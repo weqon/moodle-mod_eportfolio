@@ -29,10 +29,19 @@ to complete the installation from the command line.
 
 ### Moodle 4.5 ###
 
+**Version 0.3.3**
+
+- Added activity setting for upload size limit
+- Adjusted mod form to set upload size limit per activity
+- Set allowed file types for feedback file similar to assign activity
+- Added start, due and remind for grading date incl. sending messsages
+- Added get_coursemodule_info to lib
+- Added new class dates to display dates on course page and activity page
+
 **Version 0.3.2**
 
-- Reverted required Moodle version to 4.1
-- 
+- Reverted required Moodle version to 4.1 
+
 **Version 0.3.1**
 
 - Set maturity to stable
