@@ -53,14 +53,7 @@ if (!empty($page)) {
 
 $url = new moodle_url('/mod/eportfolio/view.php', $params);
 
-$config = get_config('mod_eportfolio');
-
-if (isset($config->maxbytes)) {
-    $filemaxbytes = $config->maxbytes;
-} else {
-    $filemaxbytes = $CFG->maxbytes;
-}
-
+$filemaxbytes = mod_eportfolio_get_upload_max_file_size();
 
 $PAGE->set_url($url);
 $PAGE->set_title(format_string($moduleinstance->name));
