@@ -29,6 +29,10 @@ to complete the installation from the command line.
 
 ### Moodle 4.5 ###
 
+**Version 0.3.4**
+
+- Bug fix getting upload limit plugin config/global config
+
 **Version 0.3.3**
 
 - Added activity setting for upload size limit
