@@ -40,8 +40,28 @@ $string['eportfolio:feedback:label_help'] = 'Available types:<br>
 <b>Feedback comments:</b> A text field for entering feedback in text form is displayed in the rating overview.<br><br>
 <b>File feedback:</b> An input field for uploading a feedback file is displayed in the rating overview.';
 
+$string['eportfolio:availability'] = 'Availability';
+$string['eportfolio:allowsubmission:fromdate'] = 'Allow submissions from';
+$string['eportfolio:allowsubmission:fromdate_help'] =
+        'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
+$string['eportfolio:submissionduedate'] = 'Due date';
+$string['eportfolio:submissionduedate_help'] = 'This is when the submission is due.';
+$string['eportfolio:gradingduedate'] = 'Remind me to grade by';
+$string['eportfolio:gradingduedate_help'] =
+        'The expected date that marking of the submissions should be completed by. This date is used to send notifications to trainers.';
+$string['eportfolio:alwaysshowdescription'] = 'Always show description';
+$string['eportfolio:alwaysshowdescription_help'] =
+        'If disabled, the ePortfolio description above will only become visible to students on the "Allow submissions from" date.';
+$string['eportfolio:duedateaftersubmission:validation'] = 'Due date must be after the allow submissions from date.';
+$string['eportfolio:gradingduefromdate:validation'] =
+        'Remind me to grade by date cannot be earlier than the allow submissions from date.';
+$string['eportfolio:gradingdueduedate:validation'] = 'Remind me to grade by date cannot be earlier than the due date.';
+
 // Index page.
-$string['noeportfolioinstances'] = 'No ePortfolio activities have been created in this course yet!'; // Mod form.
+$string['noeportfolioinstances'] = 'No ePortfolio activities have been created in this course yet!';
+$string['activitydate:submissionsdue'] = 'Due:';
+$string['activitydate:submissionsopen'] = 'Opens:';
+$string['activitydate:submissionsopened'] = 'Opened:';
 
 // Capabilities - db/access - permissions.
 $string['eportfolio:addinstance'] = 'Add new ePortfolio Grading';
@@ -82,6 +102,7 @@ $string['gradeform:gradeview'] = 'Grade';
 $string['gradeform:grader'] = 'Grading by';
 $string['gradeform:timegraded'] = 'Graded on';
 $string['gradeform:backbtn'] = 'Back to overview';
+$string['gradeform:savegrade'] = 'Save grade';
 
 // Insert & Update grading.
 $string['grade:insert:success'] = 'Your grading has been successfully saved!';
@@ -100,6 +121,30 @@ $string['message:smallmessage'] =
 <br>Grading by: {$a->userfrom}<br>URL:  <a href="{$a->viewurl}">{$a->viewurl}</a></p>';
 $string['message:subject'] = 'Notification about new assessments for ePortfolio';
 $string['message:contexturlname'] = 'View grade for ePortfolio';
+$string['message:allowsubmission:message'] =
+        '<p>You can now submit your ePortfolio in the course {$a->coursename} for the activity {$a->name}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:allowsubmission:smallmessage'] =
+        '<p>You can now submit your ePortfolio in the course {$a->coursename} for the activity {$a->name}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:allowsubmission:subject'] = 'Activity ePortfolio grading open for submission';
+$string['message:allowsubmission:contexturlname'] = 'View ePortfolio grading activity';
+$string['message:submissionduedate:message'] =
+        '<p>The submission for the activity {$a->name} in the course {$a->coursename} is due soon. Please submit your ePortfolio by {$a->duedate}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:submissionduedate:smallmessage'] =
+        '<p>The submission for the activity {$a->name} in the course {$a->coursename} is due soon. Please submit your ePortfolio by {$a->duedate}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:submissionduedate:subject'] = 'Activity ePortfolio grading submission is due soon';
+$string['message:submissionduedate:contexturlname'] = 'View ePortfolio grading activity';
+$string['message:gradingduedate:message'] =
+        '<p>Please grade the submitted ePortfolios in the activity {$a->name} in the course {$a->coursename}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:gradingduedate:smallmessage'] =
+        '<p>Please grade the submitted ePortfolios in the activity {$a->name} in the course {$a->coursename}.
+<br><a href="{$a->viewurl}">{$a->viewurl}</a></p>';
+$string['message:gradingduedate:subject'] = 'Reminder activity ePortfolio grading';
+$string['message:gradingduedate:contexturlname'] = 'View ePortfolio grading activity';
 
 // Delete shared ePortfolio.
 $string['delete:header'] = 'Allow new submission?';
@@ -122,6 +167,16 @@ $string['event:eportfolio:newgrading'] =
 $string['event:eportfolio:updatedgrade:name'] = 'ePortfolio updated grade';
 $string['event:eportfolio:updatedgrade'] =
         'The user with the id \'{$a->userid}\' updated the grade for ePortfolio {$a->filename} (fileidcontext: \'{$a->fileidcontext}\')';
+
+// Tasks.
+$string['task:messages:allowsubmission'] = 'Send messages to inform students submission is open';
+$string['task:messages:gradingduedate'] = 'Send messages to inform trainers grading is open';
+$string['task:messages:submissionduedate'] = 'Send messages to inform students submission is due';
+
+// Settings.
+$string['settings:general'] = 'Settings';
+$string['settings:maxuploadfilezise'] = 'Maximum file size';
+$string['settings:maxuploadfilezise:desc'] = 'This setting sets the maximum file size allowed for uploading feedback files.';
 
 // Privacy provider.
 $string['privacy:metadata:mod_eportfolio'] = 'Data shared by the ePortfolio plugin';
