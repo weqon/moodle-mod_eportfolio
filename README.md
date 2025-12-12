@@ -31,6 +31,16 @@ to complete the installation from the command line.
 
 **Version 0.3.2**
 
+- Plugin parity matched with MOODLE_405_STABLE
+- Added activity setting for upload size limit
+- Adjusted mod form to set upload size limit per activity
+- Set allowed file types for feedback file similar to assign activity
+- Added start, due and remind for grading date incl. sending messsages
+- Added get_coursemodule_info to lib
+- Added new class dates to display dates on course page and activity page
+
+**Version 0.3.2**
+
 - Set supported Moodle version to 5.0
 
 ### Moodle 4.5 ###
