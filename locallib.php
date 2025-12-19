@@ -144,7 +144,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
             if ($actionsallowed) {
                 // Add grade button for teacher.
-                $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grade.php',
+                $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grading.php',
                         ['id' => $cmid, 'eportid' => $ent->eportid, 'page' => $page]),
                         get_string('overview:table:btn:grade', 'mod_eportfolio'),
                         ['class' => 'btn btn-primary',
@@ -160,7 +160,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
 
             } else {
                 // Add view button for students.
-                $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grade.php',
+                $actionbtn = html_writer::link(new moodle_url('/mod/eportfolio/grading.php',
                         ['id' => $cmid, 'eportid' => $ent->eportid, 'page' => $page]),
                         get_string('overview:table:btn:view', 'mod_eportfolio'),
                         ['class' => 'btn btn-primary',
@@ -185,7 +185,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
     } else {
         // No ePortfolios found.
         $data = new stdClass();
-        
+
         if ($actionsallowed) {
             $data->nofilefoundteacher = true;
         } else {
@@ -194,7 +194,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
             $eporturl = new moodle_url('/local/eportfolio/index.php');
             $data->eporturl = $eporturl->out(false);
         }
-        
+
         echo $OUTPUT->render_from_template('mod_eportfolio/noeportfolios_found', $data);
     }
 
@@ -212,7 +212,8 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
  * @param int $perpage
  * @return array
  */
-function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort = null, $tdir = null, $page = null, $perpage = null) {
+function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort = null, $tdir = null, $page = null,
+        $perpage = null) {
     global $DB;
 
     $sql = "SELECT es.id, es.title, es.fileidcontext, es.usermodified, es.courseid, es.timecreated,
@@ -357,7 +358,7 @@ function mod_eportfolio_get_upload_max_file_size() {
     } else if ($CFG->maxbytes == 0) {
         // In case global setting is set to default.
         $filemaxbytes = get_max_upload_file_size();
-    }  else if ($CFG->maxbytes != 0) {
+    } else if ($CFG->maxbytes != 0) {
         // check, if the global upload limit was set.
         $filemaxbytes = $CFG->maxbytes;
     } else {
@@ -372,5 +373,34 @@ function mod_eportfolio_get_upload_max_file_size() {
     }
 
     return (int) $filemaxbytes;
+}
 
+/**
+ * Get the upload max file size.
+ *
+ * @param object $modulecontext
+ * @return array
+ */
+
+function mod_eportfolio_get_filemanager_options(object $modulecontext, $allowedfiletypes = null) {
+
+    $filemaxbytes = mod_eportfolio_get_upload_max_file_size();
+
+    if (!empty($allowedfiletypes)) {
+        $filetypesutil = new \core_form\filetypes_util();
+        $acceptedtypes = $filetypesutil->normalize_file_types($allowedfiletypes);
+    } else {
+        $acceptedtypes = ['*'];
+    }
+
+    $filemanageropts = [
+            'subdirs' => 0,
+            'maxbytes' => $filemaxbytes,
+            'areamaxbytes' => $filemaxbytes,
+            'maxfiles' => 1,
+            'context' => $modulecontext,
+            'accepted_types' => $acceptedtypes,
+    ];
+
+    return $filemanageropts;
 }

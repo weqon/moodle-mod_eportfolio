@@ -39,6 +39,9 @@ $string['eportfolio:feedback:file'] = 'File feedback';
 $string['eportfolio:feedback:label_help'] = 'Available types:<br>
 <b>Feedback comments:</b> A text field for entering feedback in text form is displayed in the rating overview.<br><br>
 <b>File feedback:</b> An input field for uploading a feedback file is displayed in the rating overview.';
+$string['eportfolio:feedback:allowedfiletypes'] = 'Accepted file types';
+$string['eportfolio:feedback:allowedfiletypes_help'] = 'The accepted file types can be restricted as a comma-separated list with file extensions.
+If the field is empty, all file types are allowed.';
 
 $string['eportfolio:availability'] = 'Availability';
 $string['eportfolio:allowsubmission:fromdate'] = 'Allow submissions from';
@@ -56,6 +59,7 @@ $string['eportfolio:duedateaftersubmission:validation'] = 'Due date must be afte
 $string['eportfolio:gradingduefromdate:validation'] =
         'Remind me to grade by date cannot be earlier than the allow submissions from date.';
 $string['eportfolio:gradingdueduedate:validation'] = 'Remind me to grade by date cannot be earlier than the due date.';
+$string['eportfolio:feedbacktypes:validation'] = 'You must select at least one feedback type..';
 
 // Index page.
 $string['noeportfolioinstances'] = 'No ePortfolio activities have been created in this course yet!';
@@ -107,8 +111,6 @@ $string['gradeform:savegrade'] = 'Save grade';
 // Insert & Update grading.
 $string['grade:insert:success'] = 'Your grading has been successfully saved!';
 $string['grade:insert:error'] = 'An error occurred while saving the grading! Please try again!';
-$string['grade:update:success'] = 'Your grading has been successfully updated!';
-$string['grade:update:error'] = 'An error occurred while updating the grading! Please try again!';
 $string['grade:cancelled'] = 'The grading was cancelled!';
 
 // Message provider.

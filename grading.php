@@ -24,8 +24,7 @@
 
 require(__DIR__ . '/../../config.php');
 require_once('locallib.php');
-require_once('classes/forms/grade_form_feedback_text.php');
-require_once('classes/forms/grade_form_feedback_file.php');
+require_once('classes/forms/grade_form_feedback.php');
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -73,6 +72,8 @@ if (!mod_eportfolio_check_current_eportfolio_course($course->id)) {
 // Check, if teacher or student is accessing this page.
 if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin()) {
 
+    $gradeurl = new moodle_url('/mod/eportfolio/grading.php', ['id' => $cm->id, 'eportid' => $eport->id, 'page' => $page]);
+
     $customdata = [
             'eportid' => $eport->id,
             'userid' => $eport->usermodified,
@@ -87,34 +88,26 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
     $setdata = [];
 
+    // In case we already have a grade, prefill the form.
     if (!empty($gradeexists)) {
-        if ($moduleinstance->feedbacktype == 0) {
-            $setdata = [
-                    'grade' => $gradeexists->grade,
-                    'feedbacktext' => $gradeexists->feedbacktext,
-            ];
-        } else if ($moduleinstance->feedbacktype == 1) {
-            $setdata = [
-                    'grade' => $gradeexists->grade,
-                    'feedbackfileid' => $gradeexists->feedbackfileid,
-            ];
+        $setdata['grade'] = $gradeexists->grade;
+
+        if ($moduleinstance->feedbacktext) {
+            $setdata['feedbacktext'] = $gradeexists->feedbacktext;
+        }
+        if ($moduleinstance->feedbackfile) {
+            $setdata['feedbackfileid'] = $gradeexists->feedbackfileid;
         }
     }
 
-    $gradeurl = new moodle_url('/mod/eportfolio/grade.php', ['id' => $cm->id, 'eportid' => $eport->id, 'page' => $page]);
+    if ($moduleinstance->feedbacktext) {
+        $customdata['feedbacktextset'] = 1;
+    }
 
-    if ($moduleinstance->feedbacktype == 0) {
-        $mform = new grade_form_feedback_text($gradeurl->out(false), $customdata);
-    } else if ($moduleinstance->feedbacktype == 1) {
-        // ToDo: Make this configurable.
-        $filemanageropts = [
-                'subdirs' => 0,
-                'maxbytes' => $filemaxbytes,
-                'areamaxbytes' => $filemaxbytes,
-                'maxfiles' => 1,
-                'context' => $modulecontext,
-                'accepted_types' => ['*'],
-        ];
+    if ($moduleinstance->feedbackfile) {
+        $customdata['feedbackfileset'] = 1;
+
+        $filemanageropts = mod_eportfolio_get_filemanager_options($modulecontext, $moduleinstance->allowedfiletypes);
 
         $draftid = file_get_submitted_draft_itemid('feedbackfile');
         file_prepare_draft_area($draftid, $modulecontext->id, 'mod_eportfolio', 'feedbackfile',
@@ -124,9 +117,9 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
         $customdata['filemanageropts'] = $filemanageropts;
         $customdata['feedbackfile'] = $draftid;
-        $mform = new grade_form_feedback_file($gradeurl->out(false), $customdata);
     }
 
+    $mform = new grade_form_feedback($gradeurl->out(false), $customdata);
     $mform->set_data($setdata);
 
     if ($formdata = $mform->is_cancelled()) {
@@ -148,12 +141,12 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         $data->grade = $formdata->grade;
         $data->usermodified = $USER->id;
 
-        if ($moduleinstance->feedbacktype == 0) {
+        if ($formdata->feedbacktextset) {
             $data->feedbacktext = $formdata->feedbacktext;
             $data->feedbackfileid = 0;
+        }
 
-        } else if ($moduleinstance->feedbacktype == 1) {
-            $data->feedbacktext = '';
+        if ($formdata->feedbackfileset) {
             $data->feedbackfileid = 0;
 
             $draftid = $formdata->feedbackfile;
@@ -172,140 +165,75 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         }
 
         if (!empty($gradeexists)) {
-
             $data->id = $gradeexists->id;
             $data->timemodified = time();
 
-            if ($DB->update_record('eportfolio_grade', $data)) {
-
-                // Send message to inform user about new or updated grade.
-                $fs = get_file_storage();
-                $file = $fs->get_file_by_id($data->fileidcontext);
-
-                $filename = '';
-                if (!empty($file)) {
-                    $filename = $file->get_filename();
-                }
-
-                $h5pfilename = mod_eportfolio_get_h5p_title($data->fileidcontext);
-
-                if (!empty($eport->title)) {
-                    $filename = $eport->title;
-                } else if (!empty($h5pfilename)) {
-                    $filename = $h5pfilename;
-                }
-
-                // Prepare task data.
-                $task = new \mod_eportfolio\task\send_messages();
-
-                $taskdata = new stdClass();
-
-                $taskdata->courseid = $data->courseid;
-                $taskdata->cmid = $data->cmid;
-                $taskdata->userfrom = $data->graderid;
-                $taskdata->userto = $data->userid;
-                $taskdata->filename = $filename;
-                $taskdata->fileid = $data->fileidcontext;
-
-                $task->set_custom_data($taskdata);
-
-                // Queue the task.
-                \core\task\manager::queue_adhoc_task($task);
-
-                $event = \mod_eportfolio\event\grading_updated::create([
-                        'objectid' => $moduleinstance->id,
-                        'context' => $modulecontext,
-                        'other' => [
-                                'description' => get_string('event:eportfolio:updatedgrade', 'mod_eportfolio',
-                                        ['userid' => $USER->id, 'filename' => $filename,
-                                                'fileidcontext' => $eport->fileidcontext]),
-                        ],
-                ]);
-                $event->add_record_snapshot('course', $course);
-                $event->add_record_snapshot('eportfolio', $moduleinstance);
-                $event->trigger();
-
-                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
-                        get_string('grade:update:success', 'mod_eportfolio'),
-                        null, \core\output\notification::NOTIFY_SUCCESS);
-
-            } else {
-
-                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
-                        get_string('grade:update:error', 'mod_eportfolio'),
-                        null, \core\output\notification::NOTIFY_ERROR);
-
-            }
-
-        } else {
-
-            $data->timecreated = time();
-
-            if ($DB->insert_record('eportfolio_grade', $data)) {
-
-                // Send message to inform user about new or updated grade.
-                $fs = get_file_storage();
-                $file = $fs->get_file_by_id($data->fileidcontext);
-
-                $filename = '';
-                if (!empty($file)) {
-                    $filename = $file->get_filename();
-                }
-
-                $h5pfilename = mod_eportfolio_get_h5p_title($data->fileidcontext);
-
-                if (!empty($eport->title)) {
-                    $filename = $eport->title;
-                } else if (!empty($h5pfilename)) {
-                    $filename = $h5pfilename;
-                }
-
-                // Prepare task data.
-                $task = new \mod_eportfolio\task\send_messages();
-
-                $taskdata = new stdClass();
-
-                $taskdata->courseid = $data->courseid;
-                $taskdata->cmid = $data->cmid;
-                $taskdata->userfrom = $data->graderid;
-                $taskdata->userto = $data->userid;
-                $taskdata->filename = $filename;
-                $taskdata->fileid = $data->fileidcontext;
-
-                $task->set_custom_data($taskdata);
-
-                // Queue the task.
-                \core\task\manager::queue_adhoc_task($task);
-
-                $event = \mod_eportfolio\event\grading_updated::create([
-                        'objectid' => $moduleinstance->id,
-                        'context' => $modulecontext,
-                        'other' => [
-                                'description' => get_string('event:eportfolio:updatedgrade', 'mod_eportfolio',
-                                        ['userid' => $USER->id, 'filename' => $filename,
-                                                'fileidcontext' => $eport->fileidcontext]),
-                        ],
-                ]);
-                $event->add_record_snapshot('course', $course);
-                $event->add_record_snapshot('eportfolio', $moduleinstance);
-                $event->trigger();
-
-                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
-                        get_string('grade:insert:success', 'mod_eportfolio'),
-                        null, \core\output\notification::NOTIFY_SUCCESS);
-
-            } else {
-
+            if (!$DB->update_record('eportfolio_grade', $data)) {
                 redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
                         get_string('grade:insert:error', 'mod_eportfolio'),
                         null, \core\output\notification::NOTIFY_ERROR);
-
             }
+        } else {
+            $data->timecreated = time();
 
+            if (!$DB->insert_record('eportfolio_grade', $data)) {
+                redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
+                        get_string('grade:insert:error', 'mod_eportfolio'),
+                        null, \core\output\notification::NOTIFY_ERROR);
+            }
         }
 
-    } else {
+        // At last but not least: Send message and trigger event.
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($data->fileidcontext);
 
+        $filename = '';
+        if (!empty($file)) {
+            $filename = $file->get_filename();
+        }
+
+        $h5pfilename = mod_eportfolio_get_h5p_title($data->fileidcontext);
+
+        if (!empty($eport->title)) {
+            $filename = $eport->title;
+        } else if (!empty($h5pfilename)) {
+            $filename = $h5pfilename;
+        }
+
+        // Prepare task data.
+        $task = new \mod_eportfolio\task\send_messages();
+
+        $taskdata = new stdClass();
+
+        $taskdata->courseid = $data->courseid;
+        $taskdata->cmid = $data->cmid;
+        $taskdata->userfrom = $data->graderid;
+        $taskdata->userto = $data->userid;
+        $taskdata->filename = $filename;
+        $taskdata->fileid = $data->fileidcontext;
+
+        $task->set_custom_data($taskdata);
+
+        // Queue the task.
+        \core\task\manager::queue_adhoc_task($task);
+
+        $event = \mod_eportfolio\event\grading_updated::create([
+                'objectid' => $moduleinstance->id,
+                'context' => $modulecontext,
+                'other' => [
+                        'description' => get_string('event:eportfolio:updatedgrade', 'mod_eportfolio',
+                                ['userid' => $USER->id, 'filename' => $filename,
+                                        'fileidcontext' => $eport->fileidcontext]),
+                ],
+        ]);
+        $event->add_record_snapshot('course', $course);
+        $event->add_record_snapshot('eportfolio', $moduleinstance);
+        $event->trigger();
+
+        redirect(new moodle_url('/mod/eportfolio/view.php', ['id' => $cm->id, 'page' => $page]),
+                get_string('grade:insert:success', 'mod_eportfolio'),
+                null, \core\output\notification::NOTIFY_SUCCESS);
+    } else {
         // Convert display options to a valid object.
         $factory = new \core_h5p\factory();
         $core = $factory->get_core();
@@ -315,7 +243,6 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         $file = $fs->get_file_by_id($eport->fileidcontext);
 
         if (!empty($file)) {
-
             $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
                     $file->get_filearea(), $file->get_itemid(), $file->get_filepath(),
                     $file->get_filename(), false);
@@ -350,12 +277,10 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
             echo $OUTPUT->render_from_template('mod_eportfolio/grade_eportfolio', $data);
             echo $OUTPUT->footer();
         }
-
     }
 
 } else {
     // User is directly accessing the grade results.
-
     // Convert display options to a valid object.
     $factory = new \core_h5p\factory();
     $core = $factory->get_core();
@@ -404,20 +329,18 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
             // Check if we have feedback as comment or file.
             if ($moduleinstance->feedbacktype == 0) {
                 $data->gradetext = format_text($getgrade->feedbacktext);
-
             } else if ($moduleinstance->feedbacktype == 1) {
-
                 $fs = get_file_storage();
                 $feedbackfile = $fs->get_file_by_id($getgrade->feedbackfileid);
 
-                $feedbackfileurl = moodle_url::make_pluginfile_url($feedbackfile->get_contextid(), $feedbackfile->get_component(),
-                        $feedbackfile->get_filearea(), $feedbackfile->get_itemid(), $feedbackfile->get_filepath(),
-                        $feedbackfile->get_filename(), false);
+                $feedbackfileurl =
+                        moodle_url::make_pluginfile_url($feedbackfile->get_contextid(), $feedbackfile->get_component(),
+                                $feedbackfile->get_filearea(), $feedbackfile->get_itemid(), $feedbackfile->get_filepath(),
+                                $feedbackfile->get_filename(), false);
 
                 $data->gradefile = $feedbackfileurl->out(false);
                 $data->gradefilename = $feedbackfile->get_filename();
             }
-
         }
 
         $event = \mod_eportfolio\event\grading_viewed::create([

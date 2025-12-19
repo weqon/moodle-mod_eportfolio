@@ -200,7 +200,7 @@ function xmldb_eportfolio_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         // Eportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2025052300, 'eportfolio');
     }
@@ -218,7 +218,8 @@ function xmldb_eportfolio_upgrade($oldversion) {
 
         // Define field allowsubmission_send to be added to eportfolio.
         $table = new xmldb_table('eportfolio');
-        $field = new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
+        $field =
+                new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
 
         // Conditionally launch add field allowsubmission_send.
         if (!$dbman->field_exists($table, $field)) {
@@ -254,7 +255,8 @@ function xmldb_eportfolio_upgrade($oldversion) {
 
         // Define field submissionduedate_send to be added to eportfolio.
         $table = new xmldb_table('eportfolio');
-        $field = new xmldb_field('submissionduedate_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'submissionduedate');
+        $field = new xmldb_field('submissionduedate_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0',
+                'submissionduedate');
 
         // Conditionally launch add field submissionduedate_send.
         if (!$dbman->field_exists($table, $field)) {
@@ -269,7 +271,8 @@ function xmldb_eportfolio_upgrade($oldversion) {
 
         // Define field alwaysshowdescription to be added to eportfolio.
         $table = new xmldb_table('eportfolio');
-        $field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'submissionduedate_send');
+        $field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0',
+                'submissionduedate_send');
 
         // Conditionally launch add field alwaysshowdescription.
         if (!$dbman->field_exists($table, $field)) {
@@ -292,7 +295,8 @@ function xmldb_eportfolio_upgrade($oldversion) {
 
         // Rename field allowsubmission_send on table eportfolio to allowsubmissionsfromdate_send.
         $table = new xmldb_table('eportfolio');
-        $field = new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
+        $field =
+                new xmldb_field('allowsubmission_send', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowsubmission');
 
         // Launch rename field allowsubmissionsfromdate_send.
         $dbman->rename_field($table, $field, 'allowsubmissionsfromdate_send');
@@ -300,6 +304,67 @@ function xmldb_eportfolio_upgrade($oldversion) {
         // Eportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2025110503, 'eportfolio');
     }
+
+    if ($oldversion < 2025121202) {
+
+        // Define field feedbacktext to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('feedbacktext', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'feedbacktype');
+
+        // Conditionally launch add field feedbacktext.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field feedbackfile to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('feedbackfile', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'feedbacktext');
+
+        // Conditionally launch add field feedbackfile.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025121202, 'eportfolio');
+
+        // Update existing activities.
+        $eports = $DB->get_records('eportfolio');
+        if (!empty ($eports)) {
+            foreach ($eports as $eport) {
+                if ($eport->feedbacktype == 0) {
+                    // Set method to feedbacktext.
+                    $eport->feedbacktext = 1;
+                } else if ($eport->feedbacktype == 1) {
+                    // Set method to feedbackfile.
+                    $eport->feedbackfile = 1;
+                    $eport->feedbacktext = 0; // Since it's the default method.
+                } else {
+                    // Set default method to feedbacktext.
+                    $eport->feedbacktext = 1;
+                }
+                
+                // Update database entry.
+                $DB->update_record('eportfolio', $eport);
+            }
+        }
+    }
+
+    if ($oldversion < 2025121203) {
+
+        // Define field allowedfiletypes to be added to eportfolio.
+        $table = new xmldb_table('eportfolio');
+        $field = new xmldb_field('allowedfiletypes', XMLDB_TYPE_TEXT, null, null, null, null, null, 'feedbackfile');
+
+        // Conditionally launch add field allowedfiletypes.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025121203, 'eportfolio');
+    }
+
 
     return true;
 }

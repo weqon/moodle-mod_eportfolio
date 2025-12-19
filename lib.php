@@ -77,6 +77,11 @@ function eportfolio_add_instance($moduleinstance, $mform = null) {
     $moduleinstance->timecreated = time();
     $moduleinstance->usermodified = $USER->id;
 
+    // In case after creating the instance only feedback file is set, since feedback text is set to default 1 in DB.
+    if (!isset($moduleinstance->feedbacktext)) {
+        $moduleinstance->feedbacktext = 0;
+    }
+
     $id = $DB->insert_record('eportfolio', $moduleinstance);
 
     return $id;
@@ -101,6 +106,13 @@ function eportfolio_update_instance($moduleinstance, $mform = null) {
 
     if (!isset($moduleinstance->alwaysshowdescription)) {
         $moduleinstance->alwaysshowdescription = 0;
+    }
+
+    if (!isset($moduleinstance->feedbacktext)) {
+        $moduleinstance->feedbacktext = 0;
+    }
+    if (!isset($moduleinstance->feedbackfile)) {
+        $moduleinstance->feedbackfile = 0;
     }
 
     return $DB->update_record('eportfolio', $moduleinstance);

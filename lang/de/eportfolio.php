@@ -40,6 +40,9 @@ $string['eportfolio:feedback:label_help'] = 'Verfügbare Typen:<br>
 <b>Feedback als Kommentar:</b> In der Bewertungsübersicht wird ein Textfeld zur Eingabe eines Feedbacks in Textform eingeblendet.<br><br>
 <b>Feedback als Datei:</b> In der Bewertungsübersicht wird ein Eingabefeld zum Hochladen einer Feedback-Datei eingeblendet.';
 
+$string['eportfolio:feedback:allowedfiletypes'] = 'Akzeptierte Dateitypen';
+$string['eportfolio:feedback:allowedfiletypes_help'] = 'Die akzeptierten Dateitypen können als kommagetrennte Liste mit Dateiendungen eingeschränkt werden.
+Falls das Feld leer ist, sind alle Dateitypen erlaubt.';
 $string['eportfolio:availability'] = 'Verfügbarkeit';
 $string['eportfolio:allowsubmission:fromdate'] = 'Abgabebeginn';
 $string['eportfolio:allowsubmission:fromdate_help'] =
@@ -58,6 +61,7 @@ $string['eportfolio:duedateaftersubmission:validation'] = 'Das Fälligkeitsdatum
 $string['eportfolio:gradingduefromdate:validation'] =
         'An die Bewertung erinnern kann nicht vor dem Datum für Abgabebeginn liegen.';
 $string['eportfolio:gradingdueduedate:validation'] = 'An die Bewertung erinnern kann nicht vor dem Fälligkeitsdatum liegen.';
+$string['eportfolio:feedbacktypes:validation'] = 'Sie müssen mindestens einen Feedback Typen auswählen.';
 
 // Index page.
 $string['noeportfolioinstances'] = 'In diesem Kurs wurden noch keine ePortfolio Aktivitäten angelegt!';
@@ -109,8 +113,6 @@ $string['gradeform:savegrade'] = 'Bewertung abgeben';
 // Insert & Update grading.
 $string['grade:insert:success'] = 'Ihre Bewertung wurde erfolgreich gespeichert!';
 $string['grade:insert:error'] = 'Beim Speichern der Benotung ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
-$string['grade:update:success'] = 'Ihre Bewertung wurde erfolgreich aktualisiert!';
-$string['grade:update:error'] = 'Beim Aktualisieren der Benotung ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
 $string['grade:cancelled'] = 'Die Bewertung wurde abgebrochen!';
 
 // Message provider.

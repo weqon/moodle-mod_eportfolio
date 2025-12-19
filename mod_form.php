@@ -67,18 +67,21 @@ class mod_eportfolio_mod_form extends moodleform_mod {
 
         // Adding the "general" fieldset, where all the common settings are shown.
         $mform->addElement('header', 'feedback', get_string('eportfolio:feedback:header', 'mod_eportfolio'));
+        $mform->setExpanded('feedback', true);
 
-        // Select for available feedback types.
-        $selectvalues = [
-                '0' => get_string('eportfolio:feedback:text', 'mod_eportfolio'),
-                '1' => get_string('eportfolio:feedback:file', 'mod_eportfolio'),
-        ];
+        // Available feedback types.
+        $feedbacktypes = [];
+        $feedbacktypes[] =&
+                $mform->createElement('checkbox', 'feedbacktext', '', get_string('eportfolio:feedback:text', 'mod_eportfolio'));
+        $feedbacktypes[] =&
+                $mform->createElement('checkbox', 'feedbackfile', '', get_string('eportfolio:feedback:file', 'mod_eportfolio'));
+        $mform->addGroup($feedbacktypes, 'feedbacktypes', get_string('eportfolio:feedback:label', 'mod_eportfolio'), ' ', false);
 
-        $mform->addElement('select', 'feedbacktype', get_string('eportfolio:feedback:label', 'mod_eportfolio'),
-                $selectvalues);
+        $mform->addHelpButton('feedbacktypes', 'eportfolio:feedback:label', 'mod_eportfolio');
+        $mform->setType('feedbacktypes', PARAM_INT);
 
-        $mform->addHelpButton('feedbacktype', 'eportfolio:feedback:label', 'mod_eportfolio');
-        $mform->setType('feedbacktype', PARAM_INT);
+        $mform->addElement('filetypes', 'allowedfiletypes', get_string('eportfolio:feedback:allowedfiletypes', 'mod_eportfolio'));
+        $mform->addHelpButton('allowedfiletypes', 'eportfolio:feedback:allowedfiletypes', 'mod_eportfolio');
 
         $mform->addElement('header', 'availability', get_string('eportfolio:availability', 'mod_eportfolio'));
         $mform->setExpanded('availability', true);
@@ -132,6 +135,11 @@ class mod_eportfolio_mod_form extends moodleform_mod {
             if ($data['submissionduedate'] && $data['submissionduedate'] > $data['gradingduedate']) {
                 $errors['gradingduedate'] = get_string('eportfolio:gradingdueduedate:validation', 'mod_eportfolio');
             }
+        }
+
+        // At least one method must be selected.
+        if (empty($data['feedbacktext']) && empty($data['feedbackfile'])) {
+            $errors['feedbacktypes'] = get_string('eportfolio:feedbacktypes:validation', 'mod_eportfolio');
         }
 
         return $errors;
