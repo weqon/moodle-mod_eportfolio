@@ -185,6 +185,12 @@ function eportfolio_delete_instance($id) {
         $result = false;
     }
 
+    // Delete feedback files associated with this ePortfolio.
+    $fs = get_file_storage();
+    if (!$fs->delete_area_files($modcontext->id, 'mod_eportfolio', 'feedbackfile')) {
+        $result = false;
+    }
+
     // Delete events.
     if (!$DB->delete_records('event', ['modulename' => 'eportfolio', 'instance' => $id])) {
         $result = false;
