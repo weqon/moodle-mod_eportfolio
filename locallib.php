@@ -67,8 +67,10 @@ function mod_eportfolio_check_current_eportfolio_course($courseid) {
  * @param int $perpage
  * @return void
  */
-function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = null, $tdir = null, $page = null, $perpage = null) {
-    global $DB, $USER, $OUTPUT;
+function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $url, $tsort = null, $tdir = null, $page = null,
+        $perpage = null) {
+    global $DB, $USER, $OUTPUT, $CFG;
+    require_once($CFG->libdir . '/gradelib.php');
 
     $coursemodulecontext = context_module::instance($cmid);
 
@@ -130,8 +132,26 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $url, $tsort = n
         $deletebtn = '';
 
         foreach ($entry as $ent) {
+            // Check, if gradebook was used or is legacy entry.
+            if ($ent->grade === 'gradebook') {
+                $grades = grade_get_grades(
+                        $ent->courseid,
+                        'mod',
+                        'eportfolio',
+                        $instanceid,
+                        $ent->usermodified
+                );
 
-            $grade = $ent->grade;
+                // Extract grade item.
+                $item = $grades->items[0];
+                $gradedata = $item->grades[$ent->usermodified];
+
+                // Format the grade for output.
+                $grade = $gradedata->str_grade;  // "85,00" oder "Gut" (formatiert!)
+
+            } else {
+                $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';
+            }
 
             // Add additional info icon for showing feedbacktext.
             if ($ent->feedbacktext != './') {
@@ -281,7 +301,7 @@ function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort
         $eport->userfullname = fullname($user);
         $eport->courseid = $es->courseid;
         $eport->timecreated = $es->timecreated;
-        $eport->grade = (!empty($es->grade)) ? $es->grade . '%' : './';
+        $eport->grade = $es->grade;
         $eport->feedbacktext = (!empty($es->feedbacktext)) ? $es->feedbacktext : './';
 
         $sharedeportfolios[] = $eport;

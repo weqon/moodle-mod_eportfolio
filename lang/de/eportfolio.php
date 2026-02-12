@@ -29,6 +29,8 @@ $string['pluginname'] = 'ePortfolio Bewertung';
 $string['modulename'] = 'ePortfolio Bewertung';
 $string['modulenameplural'] = 'ePortfolio Bewertung';
 $string['pluginadministration'] = 'ePortfolio Bewertung Administration';
+$string['resetuserdata'] = 'ePortfolio Bewertung Nutzerdaten zurücksetzen';
+$string['resetplugininstances'] = 'ePortfolio Bewertung zurücksetzen';
 
 // Mod form.
 $string['eportfolioname'] = 'Titel';
@@ -100,8 +102,10 @@ Die Kursteilnehmer/innen erhalten die Möglichkeit, ihre Einreichung erneut durc
 
 // Grading form.
 $string['gradeform:header'] = 'Benotung & Feedback';
-$string['gradeform:grade'] = 'Benotung (in %)';
-$string['gradeform:grade_help'] = 'Benotung in Prozent angeben.';
+$string['gradeform:grade:point'] = 'Bewertung (max. {$a->grade})';
+$string['gradeform:grade:point_help'] = 'Benotung in Punkten/Prozent angeben.';
+$string['gradeform:grade:scale'] = 'Bewertung';
+$string['gradeform:scale:nograde'] = 'Keine Bewertung';
 $string['gradeform:feedbacktext'] = 'Feedback als Kommentar';
 $string['gradeform:feedbackfile'] = 'Feedback als Datei';
 $string['gradeform:gradeview'] = 'Benotung';

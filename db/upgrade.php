@@ -365,6 +365,18 @@ function xmldb_eportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025121203, 'eportfolio');
     }
 
+    if ($oldversion < 2025121205) {
+
+        // Changing type of field grade on table eportfolio_grade to text.
+        $table = new xmldb_table('eportfolio_grade');
+        $field = new xmldb_field('grade', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'graderid');
+
+        // Launch change of type for field grade.
+        $dbman->change_field_type($table, $field);
+
+        // Eportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2025121205, 'eportfolio');
+    }
 
     return true;
 }

@@ -24,7 +24,9 @@
 
 require(__DIR__ . '/../../config.php');
 require_once('locallib.php');
+require_once('lib.php');
 require_once('classes/forms/grade_form_feedback.php');
+require_once($CFG->libdir . '/gradelib.php');
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -80,6 +82,7 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
             'cmid' => $cm->id,
             'fileidcontext' => $eport->fileidcontext,
             'courseid' => $course->id,
+            'grade' => $moduleinstance->grade,
     ];
 
     // Check, if a grade exists.
@@ -90,7 +93,27 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
     // In case we already have a grade, prefill the form.
     if (!empty($gradeexists)) {
-        $setdata['grade'] = $gradeexists->grade;
+
+        // Get the grade from the gradebook.
+        $gradeitem = grade_item::fetch([
+                'itemtype'     => 'mod',
+                'itemmodule'   => 'eportfolio',
+                'iteminstance' => $moduleinstance->id,
+                'courseid'     => $course->id
+        ]);
+
+        if ($gradeitem) {
+            // Get the current grade for the specific user.
+            $gradegrade = grade_grade::fetch([
+                    'itemid' => $gradeitem->id,
+                    'userid' => $eport->usermodified
+            ]);
+
+            if ($gradegrade) {
+                // Field 'rawgrade' contains the value in case of points or the index in case of scale.
+                $setdata['grade'] = (int)$gradegrade->rawgrade;
+            }
+        }
 
         if ($moduleinstance->feedbacktext) {
             $setdata['feedbacktext'] = $gradeexists->feedbacktext;
@@ -138,8 +161,19 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         $data->cmid = $formdata->cmid;
         $data->userid = $formdata->userid;
         $data->graderid = $USER->id;
-        $data->grade = $formdata->grade;
         $data->usermodified = $USER->id;
+
+        // Add grade item to gradebook.
+        $grades = [];
+        $grades[$formdata->userid] = (object) [
+                'userid' => $formdata->userid,
+                'rawgrade' => $formdata->grade,
+        ];
+
+        eportfolio_grade_item_update($moduleinstance, $grades);
+
+        // Add info to table eportfolio_grade that gradebook is used.
+        $data->grade = 'gradebook';
 
         if ($formdata->feedbacktextset) {
             $data->feedbacktext = $formdata->feedbacktext;
@@ -321,7 +355,29 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         if (!empty($getgrade->graderid)) {
             $grader = $DB->get_record('user', ['id' => $getgrade->graderid]);
 
-            $data->grade = $getgrade->grade . ' %';
+            // Check, if gradebook was used or is legacy entry.
+            if ($getgrade->grade === 'gradebook') {
+                $grades = grade_get_grades(
+                        $getgrade->courseid,
+                        'mod',
+                        'eportfolio',
+                        $moduleinstance->id,
+                        $getgrade->userid
+                );
+
+                // Extract grade item.
+                $item = $grades->items[0];
+                $gradedata = $item->grades[$getgrade->userid];
+
+                // Format the grade for output.
+                $grade = $gradedata->str_grade;  // "85,00" oder "Gut" (formatiert!)
+
+            } else {
+                $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';
+            }
+
+            $data->grade = $grade;
+
             $data->grader = fullname($grader);
             $data->dategraded = (!empty($getgrade->timemodified)) ? date('d.m.Y - H:i', $getgrade->timemodified) :
                     date('d.m.Y - H:i', $getgrade->timecreated);

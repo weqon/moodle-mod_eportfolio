@@ -37,6 +37,7 @@ class grade_form_feedback extends moodleform {
      * @return void
      */
     public function definition() {
+        global $DB;
 
         $mform = $this->_form; // Don't forget the underscore!
 
@@ -65,9 +66,32 @@ class grade_form_feedback extends moodleform {
 
         $mform->addElement('html', '<h3>' . get_string('gradeform:header', 'mod_eportfolio') . '</h3><br>');
 
-        $mform->addElement('text', 'grade', get_string('gradeform:grade', 'mod_eportfolio'), ['size' => '3']);
-        $mform->setType('grade', PARAM_INT);
-        $mform->addHelpButton('grade', 'gradeform:grade', 'mod_eportfolio');
+        if ($this->_customdata['grade'] > 0) {
+            // Point/percentage rating -> Simple text field.
+            $max = new stdClass();
+            $max->grade = $this->_customdata['grade'];
+
+            $mform->addElement('text', 'grade', get_string('gradeform:grade:point', 'mod_eportfolio', $max), ['size' => 3]);
+            $mform->setType('grade', PARAM_INT);
+            $mform->addHelpButton('grade', 'gradeform:grade:point', 'mod_eportfolio');
+
+        } else if ($this->_customdata['grade'] < 0) {
+            // Scale rating -> Dropdown menu with scale values.
+            $scaleid = abs($this->_customdata['grade']);
+            $scale = $DB->get_record('scale', ['id' => $scaleid]);
+
+            // Moodle stores scale values as CSV/comma-separated (e.g. ‘unsatisfactory, satisfactory, good, very good’).
+            $scaleoptions = explode(',', $scale->scale);
+            $tempoptions = array_combine(
+                    range(1, count($scaleoptions)),
+                    $scaleoptions
+            );
+
+            $options = [0 => get_string('gradeform:scale:nograde', 'mod_eportfolio')] + $tempoptions;
+
+            $mform->addElement('select', 'grade', get_string('gradeform:grade:scale', 'mod_eportfolio'), $options);
+            $mform->setType('grade', PARAM_INT);
+        }
 
         if ($this->_customdata['feedbacktextset']) {
             $mform->addElement('textarea', 'feedbacktext', get_string('gradeform:feedbacktext', 'mod_eportfolio'),

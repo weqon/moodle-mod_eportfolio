@@ -55,4 +55,14 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ],
         ],
+
+        'mod/eportfolio:grade' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => [
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
+
 ];

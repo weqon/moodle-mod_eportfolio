@@ -93,7 +93,7 @@ if (mod_eportfolio_check_current_eportfolio_course($course->id)) {
     // ToDo: check_role_capability();.
 
     // Generate table with all eportfolios shared for grading for this course.
-    mod_eportfolio_render_overview_table($course->id, $cm->id, $url, $tsort, $tdir, $page, $perpage);
+    mod_eportfolio_render_overview_table($course->id, $cm->id, $cm->instance, $url, $tsort, $tdir, $page, $perpage);
 
 } else {
     // This course is not marked as ePortfolio course.
