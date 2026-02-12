@@ -147,7 +147,7 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $ur
                 $gradedata = $item->grades[$ent->usermodified];
 
                 // Format the grade for output.
-                $grade = $gradedata->str_grade;  // "85,00" oder "Gut" (formatiert!)
+                $grade = $gradedata->str_grade;
 
             } else {
                 $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';

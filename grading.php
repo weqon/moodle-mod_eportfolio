@@ -370,7 +370,7 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
                 $gradedata = $item->grades[$getgrade->userid];
 
                 // Format the grade for output.
-                $grade = $gradedata->str_grade;  // "85,00" oder "Gut" (formatiert!)
+                $grade = $gradedata->str_grade;
 
             } else {
                 $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';
