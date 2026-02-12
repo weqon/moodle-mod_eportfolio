@@ -93,26 +93,30 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
     // In case we already have a grade, prefill the form.
     if (!empty($gradeexists)) {
-
-        // Get the grade from the gradebook.
-        $gradeitem = grade_item::fetch([
-                'itemtype'     => 'mod',
-                'itemmodule'   => 'eportfolio',
-                'iteminstance' => $moduleinstance->id,
-                'courseid'     => $course->id
-        ]);
-
-        if ($gradeitem) {
-            // Get the current grade for the specific user.
-            $gradegrade = grade_grade::fetch([
-                    'itemid' => $gradeitem->id,
-                    'userid' => $eport->usermodified
+        // Check, if gradebook was used or is legacy entry.
+        if ($gradeexists->grade === 'gradebook') {
+            // Get the grade from the gradebook.
+            $gradeitem = grade_item::fetch([
+                    'itemtype' => 'mod',
+                    'itemmodule' => 'eportfolio',
+                    'iteminstance' => $moduleinstance->id,
+                    'courseid' => $course->id
             ]);
 
-            if ($gradegrade) {
-                // Field 'rawgrade' contains the value in case of points or the index in case of scale.
-                $setdata['grade'] = (int)$gradegrade->rawgrade;
+            if (!empty($gradeitem)) {
+                // Get the current grade for the specific user.
+                $gradegrade = grade_grade::fetch([
+                        'itemid' => $gradeitem->id,
+                        'userid' => $eport->usermodified
+                ]);
+
+                if ($gradegrade) {
+                    // Field 'rawgrade' contains the value in case of points or the index in case of scale.
+                    $setdata['grade'] = (int) $gradegrade->rawgrade;
+                }
             }
+        } else {
+            $setdata['grade'] = $gradeexists->grade;
         }
 
         if ($moduleinstance->feedbacktext) {
