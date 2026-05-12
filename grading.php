@@ -167,18 +167,6 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
         $data->graderid = $USER->id;
         $data->usermodified = $USER->id;
 
-        // Add grade item to gradebook.
-        $grades = [];
-        $grades[$formdata->userid] = (object) [
-                'userid' => $formdata->userid,
-                'rawgrade' => $formdata->grade,
-        ];
-
-        eportfolio_grade_item_update($moduleinstance, $grades);
-
-        // Add info to table eportfolio_grade that gradebook is used.
-        $data->grade = 'gradebook';
-
         if ($formdata->feedbacktextset) {
             $data->feedbacktext = $formdata->feedbacktext;
             $data->feedbackfileid = 0;
@@ -201,6 +189,25 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
                 $data->feedbackfileid = $file->get_id();
             }
         }
+
+        $gradefeedbacktext = '';
+
+        if (!empty($data->feedbacktext)) {
+            $gradefeedbacktext = $data->feedbacktext;
+        }
+
+        // Add grade item to gradebook.
+        $grades = [];
+        $grades[$formdata->userid] = (object) [
+                'userid' => $formdata->userid,
+                'rawgrade' => $formdata->grade,
+                'feedback' => $gradefeedbacktext,
+        ];
+
+        eportfolio_grade_item_update($moduleinstance, $grades);
+
+        // Add info to table eportfolio_grade that gradebook is used.
+        $data->grade = 'gradebook';
 
         if (!empty($gradeexists)) {
             $data->id = $gradeexists->id;
@@ -371,10 +378,14 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
                 // Extract grade item.
                 $item = $grades->items[0];
-                $gradedata = $item->grades[$getgrade->userid];
 
-                // Format the grade for output.
-                $grade = $gradedata->str_grade;
+                if ($item->scaleid <= 0) {
+                    $grade = get_string('overview:table:nograde', 'mod_eportfolio');
+                } else {
+                    $gradedata = $item->grades[$getgrade->userid];
+                    // Format the grade for output.
+                    $grade = $gradedata->str_grade;
+                }
 
             } else {
                 $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';
@@ -386,20 +397,32 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
             $data->dategraded = (!empty($getgrade->timemodified)) ? date('d.m.Y - H:i', $getgrade->timemodified) :
                     date('d.m.Y - H:i', $getgrade->timecreated);
 
-            // Check if we have feedback as comment or file.
-            if ($moduleinstance->feedbacktype == 0) {
-                $data->gradetext = format_text($getgrade->feedbacktext);
-            } else if ($moduleinstance->feedbacktype == 1) {
+            $data->gradetextset = false;
+            $data->gradefileset = false;
+
+            // Check if we have feedback as comment and/or file.
+            if ($moduleinstance->feedbacktext) {
+                if (!empty($getgrade->feedbacktext)) {
+                    $data->gradetextset = true;
+                    $data->gradetext = format_text($getgrade->feedbacktext);
+                }
+            }
+
+            if ($moduleinstance->feedbackfile) {
+
                 $fs = get_file_storage();
                 $feedbackfile = $fs->get_file_by_id($getgrade->feedbackfileid);
 
-                $feedbackfileurl =
-                        moodle_url::make_pluginfile_url($feedbackfile->get_contextid(), $feedbackfile->get_component(),
-                                $feedbackfile->get_filearea(), $feedbackfile->get_itemid(), $feedbackfile->get_filepath(),
-                                $feedbackfile->get_filename(), false);
+                if (!empty($feedbackfile)) {
+                    $data->gradefileset = true;
+                    $feedbackfileurl =
+                            moodle_url::make_pluginfile_url($feedbackfile->get_contextid(), $feedbackfile->get_component(),
+                                    $feedbackfile->get_filearea(), $feedbackfile->get_itemid(), $feedbackfile->get_filepath(),
+                                    $feedbackfile->get_filename(), false);
 
-                $data->gradefile = $feedbackfileurl->out(false);
-                $data->gradefilename = $feedbackfile->get_filename();
+                    $data->gradefile = $feedbackfileurl->out(false);
+                    $data->gradefilename = $feedbackfile->get_filename();
+                }
             }
         }
 

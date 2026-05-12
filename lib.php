@@ -290,7 +290,7 @@ function eportfolio_grade_item_update($eportfolio, $grades = null) {
 
     if ($eportfolio->grade < 0) {
         $params['gradetype'] = GRADE_TYPE_SCALE;
-        $params['scaleid'] = -$eportfolio->grade;
+        $params['scaleid'] = $eportfolio->grade;
     }
 
     return grade_update(

@@ -125,16 +125,16 @@ if ($action === 'delete') {
             $event->add_record_snapshot('eportfolio', $moduleinstance);
             $event->trigger();
 
-            redirect($redirecturl, get_string('delete:success', 'local_eportfolio'),
+            redirect($redirecturl, get_string('delete:success', 'mod_eportfolio'),
                     null, \core\output\notification::NOTIFY_SUCCESS);
 
         } else {
-            redirect($redirecturl, get_string('delete:error', 'local_eportfolio'),
+            redirect($redirecturl, get_string('delete:error', 'mod_eportfolio'),
                     null, \core\output\notification::NOTIFY_ERROR);
 
         }
     } else {
-        redirect($redirecturl, get_string('delete:error', 'local_eportfolio'),
+        redirect($redirecturl, get_string('delete:error', 'mod_eportfolio'),
                 null, \core\output\notification::NOTIFY_ERROR);
     }
 }

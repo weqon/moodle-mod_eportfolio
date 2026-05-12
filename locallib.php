@@ -144,19 +144,39 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $ur
 
                 // Extract grade item.
                 $item = $grades->items[0];
-                $gradedata = $item->grades[$ent->usermodified];
 
-                // Format the grade for output.
-                $grade = $gradedata->str_grade;
-
+                if ($item->scaleid <= 0) {
+                    $grade = get_string('overview:table:nograde', 'mod_eportfolio');
+                } else {
+                    $gradedata = $item->grades[$ent->usermodified];
+                    // Format the grade for output.
+                    $grade = $gradedata->str_grade;
+                }
             } else {
                 $grade = (!empty($ent->grade)) ? $ent->grade . '%' : './';
+            }
+
+            // Check, if a feedback file was uploaded.
+            if ($ent->feedbackfileid) {
+
+                $fs = get_file_storage();
+                $feedbackfile = $fs->get_file_by_id($ent->feedbackfileid);
+
+                $feedbackfileurl =
+                        moodle_url::make_pluginfile_url($feedbackfile->get_contextid(), $feedbackfile->get_component(),
+                                $feedbackfile->get_filearea(), $feedbackfile->get_itemid(), $feedbackfile->get_filepath(),
+                                $feedbackfile->get_filename(), false);
+
+                $icon = $OUTPUT->pix_icon('i/files', get_string('overview:table:actions:feedbackfile', 'mod_eportfolio'));
+                $feedbackfilebuttonlink = html_writer::link($feedbackfileurl, $icon, ['class' => 'ml-1']);
+
+                $grade .= $feedbackfilebuttonlink;
             }
 
             // Add additional info icon for showing feedbacktext.
             if ($ent->feedbacktext != './') {
                 $gradefeedback =
-                        html_writer::tag('i', '', ['class' => 'fa fa-info-circle ml-3', 'data-toggle' => 'tooltip',
+                        html_writer::tag('i', '', ['class' => 'fa fa-info-circle ml-1', 'data-toggle' => 'tooltip',
                                 'data-placement' => 'bottom', 'title' => format_string($ent->feedbacktext)]);
 
                 $grade .= $gradefeedback;
@@ -237,7 +257,7 @@ function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort
     global $DB;
 
     $sql = "SELECT es.id, es.title, es.fileidcontext, es.usermodified, es.courseid, es.timecreated,
-            eg.grade, eg.feedbacktext
+            eg.grade, eg.feedbacktext, eg.feedbackfileid
             FROM {local_eportfolio_share} es
             LEFT JOIN {eportfolio_grade} eg
             ON es.fileidcontext = eg.fileidcontext
@@ -303,6 +323,7 @@ function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort
         $eport->timecreated = $es->timecreated;
         $eport->grade = $es->grade;
         $eport->feedbacktext = (!empty($es->feedbacktext)) ? $es->feedbacktext : './';
+        $eport->feedbackfileid = (!empty($es->feedbackfileid)) ? $es->feedbackfileid : 0;
 
         $sharedeportfolios[] = $eport;
     }

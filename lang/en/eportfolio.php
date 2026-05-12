@@ -90,7 +90,9 @@ $string['overview:table:title'] = 'Filename/Title';
 $string['overview:table:userfullname'] = 'Shared by';
 $string['overview:table:sharestart'] = 'Shared on';
 $string['overview:table:grade'] = 'Grading';
+$string['overview:table:nograde'] = 'No grading';
 $string['overview:table:actions'] = 'Actions';
+$string['overview:table:actions:feedbackfile'] = 'Download feedback file';
 
 $string['overview:table:btn:grade'] = 'Add grading';
 $string['overview:table:btn:view'] = 'View grading';

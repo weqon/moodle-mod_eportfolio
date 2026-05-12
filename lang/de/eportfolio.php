@@ -92,7 +92,9 @@ $string['overview:table:title'] = 'Titel';
 $string['overview:table:userfullname'] = 'Geteilt von';
 $string['overview:table:sharestart'] = 'Geteilt am';
 $string['overview:table:grade'] = 'Bewertung';
+$string['overview:table:nograde'] = 'Keine Bewertung';
 $string['overview:table:actions'] = 'Aktionen';
+$string['overview:table:actions:feedbackfile'] = 'Feedback Datei herunterladen';
 
 $string['overview:table:btn:grade'] = 'Bewerten';
 $string['overview:table:btn:view'] = 'Anzeigen';
@@ -159,7 +161,7 @@ $string['delete:header'] = 'Neue Freigabe erlauben?';
 $string['delete:confirm'] = 'Löschen bestätigen';
 $string['delete:checkconfirm'] = '<b>Möchten Sie für die ausgewählte Datei wirklich eine neue Freigabe erlauben?</b><br><br>
 <b>Die eingereichte Datei und bestehende Bewertungen werden gelöscht!</b>';
-$string['delete:success'] = 'Datei wurde erfolgreich gelöscht!';
+$string['delete:success'] = 'Das eingereichte ePortfolio wurde erfolgreich gelöscht!';
 $string['delete:error'] = 'Beim Löschen der Datei ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!';
 
 // Events.
