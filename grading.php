@@ -378,6 +378,13 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
                 // Extract grade item.
                 $item = $grades->items[0];
+                $gradedata = $item->grades[$ent->usermodified] ?? null;
+
+                if (empty($gradedata) || $gradedata->grade === null) {
+                    $grade = get_string('overview:table:nograde', 'mod_eportfolio');
+                } else {
+                    $grade = $gradedata->str_grade;
+                }
 
                 if ($item->scaleid <= 0) {
                     $grade = get_string('overview:table:nograde', 'mod_eportfolio');
