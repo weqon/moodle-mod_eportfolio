@@ -72,7 +72,7 @@ class grade_form_feedback extends moodleform {
             $max->grade = $this->_customdata['grade'];
 
             $mform->addElement('text', 'grade', get_string('gradeform:grade:point', 'mod_eportfolio', $max), ['size' => 3]);
-            $mform->setType('grade', PARAM_INT);
+            $mform->setType('grade', PARAM_FLOAT);
             $mform->addHelpButton('grade', 'gradeform:grade:point', 'mod_eportfolio');
 
         } else if ($this->_customdata['grade'] < 0) {
