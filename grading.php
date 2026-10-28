@@ -110,9 +110,13 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
                         'userid' => $eport->usermodified
                 ]);
 
-                if ($gradegrade) {
+                if ($gradegrade && $gradegrade->rawgrade !== null) {
                     // Field 'rawgrade' contains the value in case of points or the index in case of scale.
-                    $setdata['grade'] = (int) $gradegrade->rawgrade;
+                    if ($moduleinstance->grade < 0) {
+                        $setdata['grade'] = (int) $gradegrade->rawgrade;
+                    } else {
+                        $setdata['grade'] = (float) $gradegrade->rawgrade;
+                    }
                 }
             }
         } else {
@@ -378,18 +382,11 @@ if (has_capability('mod/eportfolio:grade_eport', $modulecontext) || is_siteadmin
 
                 // Extract grade item.
                 $item = $grades->items[0];
-                $gradedata = $item->grades[$getgrade->usermodified] ?? null;
+                $gradedata = $item->grades[$getgrade->userid] ?? null;
 
                 if (empty($gradedata) || $gradedata->grade === null) {
                     $grade = get_string('overview:table:nograde', 'mod_eportfolio');
                 } else {
-                    $grade = $gradedata->str_grade;
-                }
-
-                if ($item->scaleid <= 0) {
-                    $grade = get_string('overview:table:nograde', 'mod_eportfolio');
-                } else {
-                    $gradedata = $item->grades[$getgrade->userid];
                     // Format the grade for output.
                     $grade = $gradedata->str_grade;
                 }

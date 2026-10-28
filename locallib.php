@@ -76,6 +76,12 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $ur
 
     $actionsallowed = false;
 
+    $countparams = [
+            'shareoption' => 'grade',
+            'courseid' => $courseid,
+            'cmid' => $cmid,
+    ];
+
     // First we have to check, if current user is grading teacher.
     if (is_enrolled($coursemodulecontext, $USER, 'mod/eportfolio:grade_eport')) {
 
@@ -85,12 +91,14 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $ur
 
     } else {
         $entry = mod_eportfolio_get_eportfolios($courseid, $cmid, $USER->id, $tsort, $tdir, $page, $perpage);
+
+        $countparams['usermodified'] = $USER->id;
     }
 
     // View all ePortfolios shared for grading.
     if (!empty($entry)) {
 
-        $count = $DB->count_records('local_eportfolio_share', ['shareoption' => 'grade', 'courseid' => $courseid]);
+        $count = $DB->count_records('local_eportfolio_share', $countparams);
 
         echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
@@ -149,13 +157,6 @@ function mod_eportfolio_render_overview_table($courseid, $cmid, $instanceid, $ur
                 if (empty($gradedata) || $gradedata->grade === null) {
                     $grade = get_string('overview:table:nograde', 'mod_eportfolio');
                 } else {
-                    $grade = $gradedata->str_grade;
-                }
-
-                if ($item->scaleid <= 0) {
-                    $grade = get_string('overview:table:nograde', 'mod_eportfolio');
-                } else {
-                    $gradedata = $item->grades[$ent->usermodified];
                     // Format the grade for output.
                     $grade = $gradedata->str_grade;
                 }
@@ -284,34 +285,38 @@ function mod_eportfolio_get_eportfolios($courseid, $cmid, $userid = null, $tsort
     }
 
     // If tsort and tdir is set.
-    $sortorder = '';
+    // Always sort by ID as well, so the pagination stays stable.
+    $sortorder = " ORDER BY es.id ASC";
 
     if ($tsort) {
         $orderby = mod_eportfolio_get_sort_order($tdir);
+        $orderbyfield = '';
 
         if ($tsort === 'title') {
-            $orderbyfield = 'title';
+            $orderbyfield = 'es.title';
         } else if ($tsort === 'userfullname') {
-            $orderbyfield = 'usermodified';
+            $orderbyfield = 'es.usermodified';
         } else if ($tsort === 'sharestart') {
-            $orderbyfield = 'timecreated';
+            $orderbyfield = 'es.timecreated';
         }
 
-        $sortorder = " ORDER BY " . $orderbyfield . " " . $orderby;
+        if (!empty($orderbyfield)) {
+            $sortorder = " ORDER BY " . $orderbyfield . " " . $orderby . ", es.id ASC";
+        }
     }
 
-    if (!empty($sortorder)) {
-        $sql .= $sortorder;
+    $sql .= $sortorder;
+
+    // Use the DB API for pagination to stay compatible with all supported databases.
+    $limitfrom = 0;
+    $limitnum = 0;
+
+    if (!empty($perpage)) {
+        $limitfrom = (int) $page * (int) $perpage;
+        $limitnum = (int) $perpage;
     }
 
-    if (!empty($page)) {
-        $limitfrom = $page * $perpage;
-        $limitnum = $perpage;
-
-        $sql .= "LIMIT " . $limitfrom . ', ' . $limitnum;
-    }
-
-    $eportfoliosshare = $DB->get_records_sql($sql, $params);
+    $eportfoliosshare = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 
     $sharedeportfolios = [];
 
